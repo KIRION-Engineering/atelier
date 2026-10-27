@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KIRION Atelier</title>
+  <style>
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      background: var(--lovelace-background, var(--primary-background-color));
+      color: var(--primary-text-color);
+      font-family: var(--primary-font-family);
+      -webkit-font-smoothing: antialiased;
+      transition: color .3s;
+    }
+    /* Optional "photo" wallpaper made of soft blobs — shows what the blur does. */
+    .wall { position: fixed; inset: 0; z-index: -1; overflow: hidden; opacity: 0; transition: opacity .6s; pointer-events: none; }
+    body.photo .wall { opacity: 1; }
+    .wall i { position: absolute; border-radius: 50%; filter: blur(2px); }
+    .wall i:nth-child(1) { width: 46vmax; height: 46vmax; left: -8vmax; top: -10vmax; background: radial-gradient(circle at 30% 30%, #ff9a6b, #c2416b); }
+    .wall i:nth-child(2) { width: 38vmax; height: 38vmax; right: -6vmax; top: 18vh; background: radial-gradient(circle at 40% 40%, #7aa8ff, #3b39c9); }
+    .wall i:nth-child(3) { width: 30vmax; height: 30vmax; left: 30vw; bottom: -12vmax; background: radial-gradient(circle at 50% 30%, #6ee7c8, #0f8a7a); }
+
+    .header {
+      position: sticky; top: 0; z-index: 5; min-height: 56px; box-sizing: border-box;
+      display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 8px 16px; background: var(--app-header-background-color); color: var(--app-header-text-color);
+      border-bottom: var(--app-header-border-bottom, none);
+      backdrop-filter: var(--atelier-backdrop, none); -webkit-backdrop-filter: var(--atelier-backdrop, none);
+    }
+    .brand { font-weight: 600; letter-spacing: .02em; font-size: 15px; }
+    .brand span { color: var(--secondary-text-color); font-weight: 400; margin-left: 6px; }
+    .controls { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+    .seg { display: inline-flex; padding: 3px; border-radius: 999px; background: var(--atelier-fill); }
+    .seg button {
+      font: inherit; font-size: 12.5px; border: 0; background: none; color: var(--secondary-text-color);
+      padding: 5px 11px; border-radius: 999px; cursor: pointer;
+    }
+    .seg button[aria-pressed="true"] { background: var(--primary-color); color: var(--text-primary-color); }
+
+    main { max-width: 1180px; margin: 0 auto; padding: 20px 16px 64px; display: grid; gap: 24px; }
+    .sections { display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); align-items: start; }
+    .section { display: grid; grid-template-columns: repeat(12, 1fr); gap: 8px; }
+    .section h2 {
+      grid-column: 1 / -1; margin: 4px 4px 2px; font-size: 13px; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase; color: var(--secondary-text-color);
+    }
+    .slot { min-width: 0; }
+
+    .toast {
+      position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); opacity: 0;
+      padding: 10px 16px; border-radius: 14px; font-size: 13px; pointer-events: none;
+      background: var(--atelier-dialog-background); color: var(--primary-text-color);
+      border: 1px solid var(--atelier-stroke);
+      backdrop-filter: var(--atelier-backdrop); -webkit-backdrop-filter: var(--atelier-backdrop);
+      transition: opacity .3s, transform .3s;
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    @media (max-width: 600px) { .brand span { display: none; } }
+  </style>
+</head>
+<body>
+  <div class="wall"><i></i><i></i><i></i></div>
+  <header class="header">
+    <div class="brand">KIRION Atelier<span>podgląd</span></div>
+    <div class="controls">
+      <div class="seg" id="variant"></div>
+      <div class="seg" id="mode"></div>
+      <div class="seg" id="wall"></div>
+    </div>
+  </header>
+  <main id="main"></main>
+  <div class="toast" id="toast"></div>
+  <script type="module" src="./demo.js"></script>
+</body>
+</html>

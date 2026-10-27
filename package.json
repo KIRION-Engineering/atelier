@@ -1,0 +1,10 @@
+{
+  "name": "kirion-atelier",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node tools/build-themes.mjs",
+    "demo": "python3 -m http.server 8787"
+  }
+}
