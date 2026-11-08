@@ -1,6 +1,6 @@
 # KIRION Atelier Cards
 
-Pięć minimalistycznych kart w stylu KIRION Atelier. Działają z każdym motywem, najlepiej wyglądają z motywem KIRION Atelier i efektem szkła.
+Sześć minimalistycznych kart w stylu KIRION Atelier. Działają z każdym motywem, najlepiej wyglądają z motywem KIRION Atelier i efektem szkła.
 
 Karty instaluje integracja KIRION Atelier (patrz README). Pojawią się w selektorze kart jako „KIRION Atelier · …”.
 
@@ -67,3 +67,11 @@ title_tap_action:             # opcjonalnie, też subtitle_tap_action
   navigation_path: /panel-olek/0
 ```
 Rozmiar tekstu zmienisz przez `card_mod` albo zmienne `--title-font-size`, `--subtitle-font-size` i `--title-padding`.
+
+## Spacer
+Pusty, niewidoczny odstęp między kartami. Na dashboardzie nic nie rysuje. W podglądzie edytora ma przerywaną ramkę z podpisem, żeby łatwo go znaleźć.
+```yaml
+type: custom:kirion-atelier-spacer-card
+height: 40                    # px (domyślnie 40, jak pusta karta Mushroom Title)
+# height: 2rem                # albo z jednostką: px, rem, em, vh, %
+```

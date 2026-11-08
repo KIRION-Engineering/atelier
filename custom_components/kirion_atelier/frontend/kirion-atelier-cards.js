@@ -1,8 +1,8 @@
-/*! KIRION Atelier Cards v0.5.2
+/*! KIRION Atelier Cards v0.6.1
  * Minimal glass cards for Home Assistant: hero, tile, room, chips.
  * Styled through KIRION Atelier theme tokens; fall back to stock HA variables.
  */
-const VERSION = "0.5.2";
+const VERSION = "0.6.1";
 
 /* ---------------------------------------------------------------- i18n -- */
 
@@ -30,7 +30,9 @@ const I18N = {
       tap_action: "Akcja kliknięcia", hold_action: "Akcja przytrzymania",
       title: "Tytuł", subtitle: "Podtytuł", alignment: "Wyrównanie",
       title_tap_action: "Akcja kliknięcia tytułu", subtitle_tap_action: "Akcja kliknięcia podtytułu",
+      height: "Wysokość odstępu",
     },
+    spacer: "Odstęp",
     align: { start: "Do lewej", center: "Do środka", end: "Do prawej", justify: "Wyjustowane" },
   },
   en: {
@@ -48,7 +50,9 @@ const I18N = {
       tap_action: "Tap action", hold_action: "Hold action",
       title: "Title", subtitle: "Subtitle", alignment: "Alignment",
       title_tap_action: "Title tap action", subtitle_tap_action: "Subtitle tap action",
+      height: "Spacer height",
     },
+    spacer: "Spacer",
     align: { start: "Start", center: "Center", end: "End", justify: "Justify" },
   },
 };
@@ -1052,6 +1056,62 @@ class AtelierTitleCard extends AtelierCard {
   }
 }
 
+/* -------------------------------------------------------------- spacer -- */
+
+// Empty space of a chosen height. Invisible on the dashboard; the card
+// editor's preview shows a dashed outline so it can be found and sized.
+const SPACER_UNITS = /^\d+(\.\d+)?(px|rem|em|vh|%)$/;
+
+class AtelierSpacerCard extends AtelierCard {
+  static styles = `
+    :host { height: auto; }
+    ha-card {
+      background: none; border: none; box-shadow: none; border-radius: 12px;
+      backdrop-filter: none; -webkit-backdrop-filter: none;
+      height: var(--spacer-height); display: grid; place-items: center;
+    }
+    ha-card::after { display: none; }
+    span { display: none; font-size: 12px; color: var(--secondary-text-color); }
+    :host([preview]) ha-card { outline: 1px dashed var(--divider-color); outline-offset: -1px; min-height: 24px; }
+    :host([preview]) span { display: block; }
+  `;
+
+  static getConfigElement() {
+    return document.createElement("kirion-atelier-spacer-card-editor");
+  }
+
+  static getStubConfig() {
+    return { height: 40 };
+  }
+
+  set preview(value) {
+    this.toggleAttribute("preview", Boolean(value));
+  }
+
+  get _height() {
+    const h = this._config.height ?? 40;
+    if (typeof h === "number" && h >= 0) return `${h}px`;
+    return SPACER_UNITS.test(String(h)) ? String(h) : "40px";
+  }
+
+  template() {
+    return `<ha-card style="--spacer-height:${this._height}"><span></span></ha-card>`;
+  }
+
+  update() {
+    this.$("span").textContent = `${t(this._hass).spacer} · ${this._height}`;
+  }
+
+  getCardSize() {
+    const px = parseFloat(this._height) || 40;
+    return Math.max(1, Math.round(px / 50));
+  }
+
+  getGridOptions() {
+    return { columns: 12, rows: "auto" };
+  }
+}
+
 /* ------------------------------------------------------------- editors -- */
 
 // Thin wrapper around HA's own <ha-form>, so editors match the native UI.
@@ -1160,6 +1220,15 @@ class TitleEditor extends AtelierEditor {
   }
 }
 
+class SpacerEditor extends AtelierEditor {
+  static schema = [
+    {
+      name: "height",
+      selector: { number: { min: 0, max: 400, step: 4, mode: "slider", unit_of_measurement: "px" } },
+    },
+  ];
+}
+
 /* ------------------------------------------------------------ register -- */
 
 const CARDS = [
@@ -1168,6 +1237,7 @@ const CARDS = [
   ["kirion-atelier-room-card", AtelierRoomCard, "Room", "Pokój: klimat, licznik aktywnych i przyciski."],
   ["kirion-atelier-chips-card", AtelierChipsCard, "Chips", "Rząd szklanych pigułek ze statusami."],
   ["kirion-atelier-title-card", AtelierTitleCard, "Title", "Tytuł i podtytuł bez tła, z szablonami."],
+  ["kirion-atelier-spacer-card", AtelierSpacerCard, "Spacer", "Pusty odstęp o wybranej wysokości."],
 ];
 
 const EDITORS = [
@@ -1175,6 +1245,7 @@ const EDITORS = [
   ["kirion-atelier-tile-card-editor", TileEditor],
   ["kirion-atelier-room-card-editor", RoomEditor],
   ["kirion-atelier-title-card-editor", TitleEditor],
+  ["kirion-atelier-spacer-card-editor", SpacerEditor],
 ];
 
 // Home Assistant installs a scoped-registry polyfill over customElements.
