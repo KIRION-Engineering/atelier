@@ -25,7 +25,7 @@ Działa z tym repo od razu (także prywatnym), bez HACS. Home Assistant sam pobi
 frontend:
   themes: !include_dir_merge_named themes
   extra_module_url:
-    - /local/kirion-atelier/kirion-atelier.js
+    - /local/kirion-atelier/kirion-atelier.js?v=1
 
 shell_command:
   atelier_update: >-
@@ -60,6 +60,8 @@ atelier_update:
 **Każda kolejna aktualizacja:** `git push` → przycisk **Aktualizuj KIRION Atelier** → odświeżenie strony. Motyw przeładowuje się sam. Restart HA nie jest potrzebny.
 
 Jak to działa: [tools/ha-update.sh](tools/ha-update.sh) kopiuje JS do `/config/www/kirion-atelier/`, motyw do `/config/themes/` i zapisuje skrót commita w `VERSION`. [ha/kirion-atelier.js](ha/kirion-atelier.js) to stały punkt wejścia: czyta `VERSION` i ładuje moduły z wersją w adresie, więc przeglądarka nie trzyma starych plików, a między aktualizacjami nadal korzysta z cache.
+
+**Cloudflare / reverse proxy.** HA wysyła pliki z `/local` z `Cache-Control: max-age=2678400`, więc Cloudflare trzyma pliki `.js` do 31 dni, także odpowiedź 404. Jeśli HA wczytał loader, zanim plik istniał, zmień `?v=1` w `extra_module_url` na `?v=2` i zrestartuj HA albo wyczyść cache w Cloudflare. Same aktualizacje to nie dotyczy: `VERSION` nie jest cache'owany, a moduły mają nowy adres przy każdej wersji.
 
 Pliki w `/config/www` są dostępne bez logowania pod `/local/…`. Gotowy JS kart będzie więc publiczny, jeśli HA jest wystawiony do internetu. Samo repo pozostaje prywatne.
 
