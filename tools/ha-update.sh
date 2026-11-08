@@ -24,8 +24,14 @@ if [ -n "${ATELIER_SOURCE:-}" ]; then
 else
   headers=(-H "Accept: application/vnd.github+json")
   [ -n "$TOKEN" ] && headers+=(-H "Authorization: Bearer $TOKEN")
-  if ! curl -fsSL "${headers[@]}" "https://api.github.com/repos/$REPO/tarball/$REF" -o "$TMP/src.tar.gz"; then
-    echo "KIRION Atelier: download failed (ref '$REF'). Private repo? Check $CONFIG/atelier.token." >&2
+  status="$(curl -sSL "${headers[@]}" -w '%{http_code}' -o "$TMP/src.tar.gz" \
+    "https://api.github.com/repos/$REPO/tarball/$REF" || echo 000)"
+  if [ "$status" != "200" ]; then
+    if [ -z "$TOKEN" ]; then
+      echo "KIRION Atelier: brak tokena GitHub. Zapisz go w $CONFIG/atelier.token (HTTP $status)." >&2
+    else
+      echo "KIRION Atelier: GitHub odrzucił pobieranie '$REF' (HTTP $status). Sprawdź token w $CONFIG/atelier.token." >&2
+    fi
     exit 1
   fi
   tar -xzf "$TMP/src.tar.gz" -C "$TMP"
@@ -34,7 +40,7 @@ fi
 
 # GitHub tarballs unpack to a single "<owner>-<repo>-<sha>" directory.
 SRC="$(find "$TMP" -mindepth 1 -maxdepth 1 -type d | head -n 1)"
-[ -f "$SRC/ha/kirion-atelier.js" ] || { echo "KIRION Atelier: unexpected archive layout" >&2; exit 1; }
+[ -f "$SRC/ha/kirion-atelier.js" ] || { echo "KIRION Atelier: nieoczekiwana zawartość archiwum" >&2; exit 1; }
 VERSION="${SRC##*-}"
 
 mkdir -p "$WWW" "$THEMES"

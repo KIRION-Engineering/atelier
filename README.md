@@ -20,7 +20,7 @@ Działa z tym repo od razu (także prywatnym), bez HACS. Home Assistant sam pobi
 
 **1. Token (tylko dla prywatnego repo).** GitHub → Settings → Developer settings → *Fine-grained tokens* → dostęp tylko do `KIRION-Engineering/atelier`, uprawnienie *Contents: Read-only*. Zapisz go w HA jako plik `/config/atelier.token`, np. przez dodatek File editor. Nie wkładaj go do `/config/www`, bo ten katalog jest dostępny publicznie.
 
-**2. `configuration.yaml`:**
+**2. `configuration.yaml`.** Domyślna konfiguracja ma już klucz `frontend:`. Dopisz `extra_module_url` do niego, nie twórz drugiego klucza:
 ```yaml
 frontend:
   themes: !include_dir_merge_named themes
@@ -29,25 +29,33 @@ frontend:
 
 shell_command:
   atelier_update: >-
-    bash -c 'curl -fsSL -H "Authorization: Bearer $(cat /config/atelier.token)"
-    -H "Accept: application/vnd.github.raw"
-    https://api.github.com/repos/KIRION-Engineering/atelier/contents/tools/ha-update.sh | bash'
-
-script:
-  atelier_update:
-    alias: Aktualizuj KIRION Atelier
-    icon: mdi:cloud-download-outline
-    sequence:
-      - action: shell_command.atelier_update
-        response_variable: result
-      - action: frontend.reload_themes
-      - action: persistent_notification.create
-        data:
-          title: KIRION Atelier
-          message: "{{ result.stdout or result.stderr }}"
+    bash -c 'set -eo pipefail; f=/config/kirion-atelier-update.sh;
+    [ -s "$f" ] || curl -fsSL -H "Authorization: Bearer $(cat /config/atelier.token)"
+    -H "Accept: application/vnd.github.raw" -o "$f"
+    https://api.github.com/repos/KIRION-Engineering/atelier/contents/tools/ha-update.sh;
+    bash "$f"'
 ```
 
-**3.** Zrestartuj HA, uruchom skrypt **Aktualizuj KIRION Atelier** (Ustawienia → Automatyzacje → Skrypty), potem odśwież przeglądarkę i wybierz motyw w profilu.
+**3. `scripts.yaml`.** Dopisz na końcu pliku. Domyślnie HA ma `script: !include scripts.yaml`, a drugi klucz `script:` w `configuration.yaml` wyłączyłby wszystkie skrypty:
+```yaml
+atelier_update:
+  alias: Aktualizuj KIRION Atelier
+  icon: mdi:cloud-download-outline
+  sequence:
+    - action: shell_command.atelier_update
+      response_variable: result
+      continue_on_error: true
+    - action: frontend.reload_themes
+    - action: persistent_notification.create
+      data:
+        title: KIRION Atelier
+        message: >-
+          {% if result is not defined %}Aktualizacja nie powiodła się, sprawdź logi.
+          {% elif result.returncode == 0 %}{{ result.stdout }}
+          {% else %}{{ result.stderr }}{% endif %}
+```
+
+**4.** Zrestartuj HA, uruchom skrypt **Aktualizuj KIRION Atelier** (Ustawienia → Automatyzacje → Skrypty), potem odśwież przeglądarkę i wybierz motyw w profilu.
 
 **Każda kolejna aktualizacja:** `git push` → przycisk **Aktualizuj KIRION Atelier** → odświeżenie strony. Motyw przeładowuje się sam. Restart HA nie jest potrzebny.
 
