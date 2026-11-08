@@ -45,10 +45,10 @@ VERSION="${SRC##*-}"
 
 mkdir -p "$WWW" "$THEMES"
 cp "$SRC/ha/kirion-atelier.js" \
-   "$SRC/kirion-atelier-glass/dist/kirion-atelier-glass.js" \
-   "$SRC/kirion-atelier-cards/dist/kirion-atelier-cards.js" \
+   "$SRC/custom_components/kirion_atelier/frontend/kirion-atelier-glass.js" \
+   "$SRC/custom_components/kirion_atelier/frontend/kirion-atelier-cards.js" \
    "$WWW/"
-cp "$SRC/kirion-atelier-theme/themes/kirion-atelier.yaml" "$THEMES/kirion-atelier.yaml"
+cp "$SRC/custom_components/kirion_atelier/themes/kirion-atelier.yaml" "$THEMES/kirion-atelier.yaml"
 cp "$SRC/tools/ha-update.sh" "$CONFIG/kirion-atelier-update.sh"
 printf '%s\n' "$VERSION" > "$WWW/VERSION"
 

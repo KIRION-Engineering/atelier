@@ -1,8 +1,8 @@
 # KIRION Atelier Cards
 
-Cztery minimalistyczne karty w stylu KIRION Atelier. Działają z każdym motywem, najlepiej wyglądają z **KIRION Atelier Theme** + **Glass**.
+Cztery minimalistyczne karty w stylu KIRION Atelier. Działają z każdym motywem, najlepiej wyglądają z motywem KIRION Atelier i efektem szkła.
 
-Instalacja: HACS → *Custom repositories* → typ **Dashboard** → **KIRION Atelier Cards**. Karty pojawią się w selektorze kart jako „KIRION Atelier · …”.
+Karty instaluje integracja KIRION Atelier (patrz README). Pojawią się w selektorze kart jako „KIRION Atelier · …”.
 
 ## Hero
 ```yaml

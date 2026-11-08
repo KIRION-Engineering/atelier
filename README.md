@@ -1,91 +1,62 @@
 # KIRION Atelier
 
-Seria dodatków do Home Assistanta, które zmieniają wygląd na nowoczesny, minimalistyczny i szklany.
+Nowoczesny, minimalistyczny i szklany wygląd dla Home Assistanta. Jedna integracja instaluje wszystko:
 
-| Pakiet | Typ w HACS | Co robi |
-|---|---|---|
-| [kirion-atelier-theme](kirion-atelier-theme/) | Theme | 4 motywy (Ice, Sage, Amber, Mono) × tryb jasny/ciemny: paleta, przezroczyste karty, zaokrąglenia, gradientowe tło |
-| [kirion-atelier-glass](kirion-atelier-glass/) | Dashboard | Prawdziwe rozmycie tła (`backdrop-filter`) na kartach, nagłówku i dialogach — aktywne tylko przy motywie Atelier |
-| [kirion-atelier-cards](kirion-atelier-cards/) | Dashboard | Karty: Hero, Tile, Room, Chips — z edytorem wizualnym, PL/EN |
+- **4 motywy:** Ice, Sage, Amber i Mono. Każdy ma tryb jasny i ciemny, przełączany razem z systemem.
+- **Efekt szkła:** prawdziwe rozmycie tła pod kartami, nagłówkiem i oknami.
+- **4 karty:** Hero (powitanie, zegar, pogoda), Tile, Room i Chips. Mają edytor wizualny, teksty są po polsku lub angielsku.
 
-Pakiety działają niezależnie, ale są projektowane razem: motyw definiuje tokeny `--atelier-*`, a Glass i Cards je czytają.
+## Instalacja
 
-## Dlaczego HACS, a nie dodatki Supervisora
+Wymaga Home Assistanta 2024.11 lub nowszego oraz [HACS](https://hacs.xyz).
 
-Dodatki Supervisora to osobne kontenery (np. Mosquitto, Node-RED) — nie mają dostępu do interfejsu i nie zmienią jego wyglądu. Wygląd zmieniają motywy i moduły frontendu, a te dystrybuuje się przez HACS. Każdy pakiet to osobne repozytorium, bo HACS wymaga jednego typu na repo.
+1. **HACS** → ⋮ → **Custom repositories** → wklej `https://github.com/KIRION-Engineering/atelier`, typ **Integration** → **Add**.
+2. Wyszukaj **KIRION Atelier** w HACS → **Download**.
+3. **Zrestartuj** Home Assistanta.
+4. **Ustawienia → Urządzenia i usługi → Dodaj integrację → KIRION Atelier.** Wybierz motyw domyślny albo zostaw obecny.
+5. Odśwież przeglądarkę. Karty znajdziesz w selektorze kart jako „KIRION Atelier · …”.
 
-## Instalacja w HA z aktualizacją jednym przyciskiem
+Każdy użytkownik może wybrać własny wariant w swoim profilu. Motyw domyślny zmienisz w **opcjach integracji**.
 
-Działa z tym repo od razu (także prywatnym), bez HACS. Home Assistant sam pobiera `main` z GitHuba i kopiuje pliki do `/config`.
+**Aktualizacje** pojawiają się w HACS. Po kliknięciu **Update** i restarcie Home Assistanta przeglądarki od razu pobierają nowe pliki: każda wersja ma własne adresy, więc cache przeglądarki, aplikacji ani Cloudflare nie trzyma starej wersji.
 
-**1. Token (tylko dla prywatnego repo).** GitHub → Settings → Developer settings → *Fine-grained tokens* → dostęp tylko do `KIRION-Engineering/atelier`, uprawnienie *Contents: Read-only*. Zapisz go w HA jako plik `/config/atelier.token`, np. przez dodatek File editor. Nie wkładaj go do `/config/www`, bo ten katalog jest dostępny publicznie.
+### Motywy się nie pojawiły?
 
-**2. `configuration.yaml`.** Domyślna konfiguracja ma już klucz `frontend:`. Dopisz `extra_module_url` do niego, nie twórz drugiego klucza:
+Integracja kopiuje motywy do folderu `themes`. Home Assistant wczytuje je tylko wtedy, gdy `configuration.yaml` zawiera:
+
 ```yaml
 frontend:
   themes: !include_dir_merge_named themes
-  extra_module_url:
-    - /local/kirion-atelier/kirion-atelier.js?v=1
-
-shell_command:
-  atelier_update: >-
-    bash -c 'set -eo pipefail; f=/config/kirion-atelier-update.sh;
-    [ -s "$f" ] || curl -fsSL -H "Authorization: Bearer $(cat /config/atelier.token)"
-    -H "Accept: application/vnd.github.raw" -o "$f"
-    https://api.github.com/repos/KIRION-Engineering/atelier/contents/tools/ha-update.sh;
-    bash "$f"'
 ```
 
-**3. `scripts.yaml`.** Dopisz na końcu pliku. Domyślnie HA ma `script: !include scripts.yaml`, a drugi klucz `script:` w `configuration.yaml` wyłączyłby wszystkie skrypty:
-```yaml
-atelier_update:
-  alias: Aktualizuj KIRION Atelier
-  icon: mdi:cloud-download-outline
-  sequence:
-    - action: shell_command.atelier_update
-      response_variable: result
-      continue_on_error: true
-    - action: frontend.reload_themes
-    - action: persistent_notification.create
-      data:
-        title: KIRION Atelier
-        message: >-
-          {% if result is not defined %}Aktualizacja nie powiodła się, sprawdź logi.
-          {% elif result.returncode == 0 %}{{ result.stdout }}
-          {% else %}{{ result.stderr }}{% endif %}
-```
+Nowe instalacje HA mają to domyślnie. Jeśli tego brakuje, integracja pokaże zgłoszenie w **Ustawienia → Naprawy**. Gdy `frontend:` już istnieje, dopisz do niego tylko linię `themes:`, nie twórz drugiego klucza.
 
-**4.** Zrestartuj HA, uruchom skrypt **Aktualizuj KIRION Atelier** (Ustawienia → Automatyzacje → Skrypty), potem odśwież przeglądarkę i wybierz motyw w profilu.
+### Odinstalowanie
 
-**Każda kolejna aktualizacja:** `git push` → przycisk **Aktualizuj KIRION Atelier** → odświeżenie strony. Motyw przeładowuje się sam. Restart HA nie jest potrzebny.
+Usuń integrację w **Urządzenia i usługi**. Pliki motywów zostaną usunięte, a motyw domyślny wróci do standardowego, jeśli ustawiła go integracja. Potem usuń ją w HACS.
 
-Jak to działa: [tools/ha-update.sh](tools/ha-update.sh) kopiuje JS do `/config/www/kirion-atelier/`, motyw do `/config/themes/` i zapisuje skrót commita w `VERSION`. [ha/kirion-atelier.js](ha/kirion-atelier.js) to stały punkt wejścia: czyta `VERSION` i ładuje moduły z wersją w adresie, więc przeglądarka nie trzyma starych plików, a między aktualizacjami nadal korzysta z cache.
+## Karty
 
-**Cloudflare / reverse proxy.** HA wysyła pliki z `/local` z `Cache-Control: max-age=2678400`, więc Cloudflare trzyma pliki `.js` do 31 dni, także odpowiedź 404. Jeśli HA wczytał loader, zanim plik istniał, zmień `?v=1` w `extra_module_url` na `?v=2` i zrestartuj HA albo wyczyść cache w Cloudflare. Same aktualizacje to nie dotyczy: `VERSION` nie jest cache'owany, a moduły mają nowy adres przy każdej wersji.
-
-Pliki w `/config/www` są dostępne bez logowania pod `/local/…`. Gotowy JS kart będzie więc publiczny, jeśli HA jest wystawiony do internetu. Samo repo pozostaje prywatne.
-
-## Instalacja przez HACS
-
-1. Opublikuj każdy katalog `kirion-atelier-*` jako osobne repo na GitHubie (nazwa repo = nazwa katalogu).
-2. W HACS dodaj je jako *Custom repositories* (Theme / Dashboard / Dashboard) i zainstaluj.
-3. `configuration.yaml`:
-   ```yaml
-   frontend:
-     themes: !include_dir_merge_named themes
-     extra_module_url:
-       - /hacsfiles/kirion-atelier-glass/kirion-atelier-glass.js
-   ```
-4. Restart → Profil → Motyw → **KIRION Atelier**.
-5. Dodaj karty „KIRION Atelier · …” do dashboardu (najlepiej widok *Sections*).
-
-Szkło najlepiej widać na zdjęciu w tle — w ustawieniach widoku ustaw *Background* na własną tapetę.
+Konfiguracja YAML wszystkich kart: [docs/cards.md](docs/cards.md).
 
 ## Rozwój
 
 ```bash
-npm run build   # tools/tokens.mjs → themes YAML + demo/themes.generated.js
+npm run build   # tools/tokens.mjs → motywy YAML + demo/themes.generated.js
 npm run demo    # http://localhost:8787/demo/ — podgląd bez Home Assistanta
+npm test        # testy integracji w prawdziwym Home Assistancie
 ```
 
-Wszystkie kolory i wartości motywów są w [tools/tokens.mjs](tools/tokens.mjs). Nowy wariant = jedna linia w `VARIANTS`.
+| Ścieżka | Zawartość |
+|---|---|
+| `custom_components/kirion_atelier/` | integracja (to pobiera HACS) |
+| `custom_components/kirion_atelier/frontend/` | moduły Glass i Cards |
+| `tools/tokens.mjs` | wszystkie kolory i wartości motywów; nowy wariant to jedna linia w `VARIANTS` |
+| `demo/` | strona podglądu z atrapą Home Assistanta |
+| `tests/` | testy pytest |
+
+Przy wydaniu podbij `version` w `manifest.json` i `VERSION` w obu plikach JS, potem utwórz release na GitHubie z tagiem `v<wersja>`. HACS pokazuje klientom wydania jako aktualizacje.
+
+### Ręczna instalacja bez HACS
+
+Dla instancji, które nie mogą używać HACS, zostaje [tools/ha-update.sh](tools/ha-update.sh) z loaderem [ha/kirion-atelier.js](ha/kirion-atelier.js). Kopiuje on pliki do `/config/www/kirion-atelier/` i `/config/themes/`. Nie używaj go razem z integracją.

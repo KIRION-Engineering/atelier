@@ -1,0 +1,14 @@
+{
+  "domain": "kirion_atelier",
+  "name": "KIRION Atelier",
+  "codeowners": ["@KIRION-Engineering"],
+  "config_flow": true,
+  "dependencies": ["frontend", "http"],
+  "documentation": "https://github.com/KIRION-Engineering/atelier",
+  "integration_type": "service",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/KIRION-Engineering/atelier/issues",
+  "requirements": [],
+  "single_config_entry": true,
+  "version": "0.2.0"
+}

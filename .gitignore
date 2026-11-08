@@ -2,3 +2,5 @@
 node_modules/
 .impeccable/
 .ha-sim/
+__pycache__/
+.pytest_cache/

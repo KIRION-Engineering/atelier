@@ -1,0 +1,46 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "KIRION Atelier",
+        "description": "Installs the KIRION Atelier themes, the glass effect and the Atelier cards. You can change the default theme later in the integration options.",
+        "data": { "default_theme": "Default theme" },
+        "data_description": {
+          "default_theme": "Used on every device where nobody picked a theme in their profile. Each user can still choose their own."
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "KIRION Atelier is already installed.",
+      "single_instance_allowed": "KIRION Atelier is already installed."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "KIRION Atelier",
+        "data": { "default_theme": "Default theme" },
+        "data_description": {
+          "default_theme": "Used on every device where nobody picked a theme in their profile."
+        }
+      }
+    }
+  },
+  "selector": {
+    "default_theme": {
+      "options": {
+        "ice": "KIRION Atelier — Ice",
+        "sage": "KIRION Atelier — Sage",
+        "amber": "KIRION Atelier — Amber",
+        "mono": "KIRION Atelier — Mono",
+        "none": "Don't change the default theme"
+      }
+    }
+  },
+  "issues": {
+    "themes_not_loaded": {
+      "title": "KIRION Atelier themes are not loaded",
+      "description": "Home Assistant does not read theme files from the `themes` folder. Add this to `configuration.yaml` and restart Home Assistant:\n\n```yaml\nfrontend:\n  themes: !include_dir_merge_named themes\n```\n\nIf `configuration.yaml` already has a `frontend:` key, add the `themes:` line to it instead of creating a second one. The cards and the glass effect work without this."
+    }
+  }
+}

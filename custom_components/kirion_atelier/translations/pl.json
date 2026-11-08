@@ -1,0 +1,46 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "KIRION Atelier",
+        "description": "Instaluje motywy KIRION Atelier, efekt szkła i karty Atelier. Domyślny motyw możesz później zmienić w opcjach integracji.",
+        "data": { "default_theme": "Motyw domyślny" },
+        "data_description": {
+          "default_theme": "Używany na każdym urządzeniu, na którym nikt nie wybrał motywu w profilu. Każdy użytkownik nadal może wybrać własny."
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "KIRION Atelier jest już zainstalowane.",
+      "single_instance_allowed": "KIRION Atelier jest już zainstalowane."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "KIRION Atelier",
+        "data": { "default_theme": "Motyw domyślny" },
+        "data_description": {
+          "default_theme": "Używany na każdym urządzeniu, na którym nikt nie wybrał motywu w profilu."
+        }
+      }
+    }
+  },
+  "selector": {
+    "default_theme": {
+      "options": {
+        "ice": "KIRION Atelier — Ice",
+        "sage": "KIRION Atelier — Sage",
+        "amber": "KIRION Atelier — Amber",
+        "mono": "KIRION Atelier — Mono",
+        "none": "Nie zmieniaj motywu domyślnego"
+      }
+    }
+  },
+  "issues": {
+    "themes_not_loaded": {
+      "title": "Motywy KIRION Atelier nie są wczytane",
+      "description": "Home Assistant nie wczytuje motywów z folderu `themes`. Dodaj to do `configuration.yaml` i zrestartuj Home Assistanta:\n\n```yaml\nfrontend:\n  themes: !include_dir_merge_named themes\n```\n\nJeśli w `configuration.yaml` jest już klucz `frontend:`, dopisz do niego linię `themes:` zamiast tworzyć drugi. Karty i efekt szkła działają bez tego."
+    }
+  }
+}

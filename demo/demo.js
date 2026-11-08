@@ -70,8 +70,8 @@ customElements.define("ha-card", class extends HTMLElement {
   connectedCallback() {}
 });
 
-await import("../kirion-atelier-glass/dist/kirion-atelier-glass.js");
-await import("../kirion-atelier-cards/dist/kirion-atelier-cards.js");
+await import("../custom_components/kirion_atelier/frontend/kirion-atelier-glass.js");
+await import("../custom_components/kirion_atelier/frontend/kirion-atelier-cards.js");
 
 /* ---------------------------------------------------------------- hass -- */
 
