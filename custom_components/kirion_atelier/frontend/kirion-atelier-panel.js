@@ -1,4 +1,4 @@
-/*! KIRION Atelier Panel v0.3.4
+/*! KIRION Atelier Panel v0.3.6
  * Atelier Panel: the sidebar panel where admins set the colours of the whole home: accent from a
  * colour wheel or presets, background harmony, glass strength. Colours are
  * derived server-side (kirion_atelier/preview) so the preview is exactly what
@@ -148,7 +148,7 @@ const STYLES = `
   .glass {
     background: var(--ha-card-background, var(--card-background-color));
     border-radius: var(--ha-card-border-radius, 22px);
-    box-shadow: var(--ha-card-box-shadow, none);
+    box-shadow: var(--atelier-edge, inset 0 0 0 transparent), var(--ha-card-box-shadow, 0 0 0 transparent);
     backdrop-filter: var(--atelier-backdrop, none); -webkit-backdrop-filter: var(--atelier-backdrop, none);
   }
   .controls { padding: 8px 20px 20px; }

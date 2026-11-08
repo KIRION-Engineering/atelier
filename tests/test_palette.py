@@ -57,3 +57,17 @@ def test_yaml_is_one_theme_with_both_modes():
     text = theme_yaml({})
     assert text.count("\nKIRION Atelier:\n") == 1
     assert "    light:\n" in text and "    dark:\n" in text
+
+
+def test_glass_edge_is_its_own_layer():
+    # The rim is drawn above card content by the Glass module, so the card's own
+    # shadow must not carry an inset highlight as well.
+    for mode, variables in build_theme({}).items():
+        assert variables["atelier-edge"].startswith("inset 0 1px 0"), mode
+        assert "inset" not in variables["ha-card-box-shadow"], mode
+
+
+def test_cards_use_native_blur_variable():
+    theme = build_theme({"blur": 12})
+    assert theme["dark"]["ha-card-backdrop-filter"] == "blur(12px) saturate(170%)"
+    assert build_theme({"blur": 0})["light"]["ha-card-backdrop-filter"] == "none"

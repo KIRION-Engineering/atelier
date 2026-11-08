@@ -204,10 +204,10 @@ def _mode_vars(palette: dict[str, Any], mode: str) -> dict[str, str]:
         "ha-card-border-width": "0px",
         "ha-card-border-color": "transparent",
         "ha-card-border-radius": "22px",
+        # Native card blur (HA 2025+); the Glass module covers older releases.
+        "ha-card-backdrop-filter": backdrop,
         "ha-card-box-shadow": (
-            "inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 24px 48px -28px rgba(0, 0, 0, 0.75)"
-            if dark
-            else "inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 18px 40px -24px rgba(22, 32, 60, 0.32)"
+            "0 24px 48px -28px rgba(0, 0, 0, 0.75)" if dark else "0 18px 40px -24px rgba(22, 32, 60, 0.32)"
         ),
         "app-header-background-color": "rgba(10, 12, 16, 0.45)" if dark else "rgba(236, 238, 242, 0.55)",
         "app-header-text-color": text,
@@ -241,6 +241,13 @@ def _mode_vars(palette: dict[str, Any], mode: str) -> dict[str, str]:
         "atelier-on-accent": on_accent,
         "atelier-fill": "rgba(255, 255, 255, 0.07)" if dark else "rgba(14, 17, 22, 0.05)",
         "atelier-fill-strong": "rgba(255, 255, 255, 0.12)" if dark else "rgba(255, 255, 255, 0.8)",
+        # Glass edge: a light top rim plus a soft sheen. The Glass module draws it
+        # above each card's content, so artwork and dials cannot cover it.
+        "atelier-edge": (
+            "inset 0 1px 0 rgba(255, 255, 255, 0.10), inset 0 14px 24px -20px rgba(255, 255, 255, 0.08)"
+            if dark
+            else "inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 14px 24px -20px rgba(255, 255, 255, 0.55)"
+        ),
         "atelier-stroke": "rgba(255, 255, 255, 0.09)" if dark else "rgba(255, 255, 255, 0.78)",
         "atelier-dialog-background": "rgba(20, 23, 30, 0.74)" if dark else "rgba(248, 249, 251, 0.78)",
         "atelier-radius": "22px",

@@ -1,15 +1,15 @@
-/*! KIRION Atelier Glass v0.3.4
+/*! KIRION Atelier Glass v0.3.6
  *
- * Home Assistant themes can only set CSS variables, and the frontend has no
- * variable for backdrop-filter. This module adds one: every patched element
- * reads `--atelier-backdrop`, which only KIRION Atelier themes define. With any
- * other theme active the variable is unset and the module does nothing.
+ * Adds what theme variables cannot: the glass edge drawn above each card's
+ * content, and backdrop blur on elements without a native blur variable.
+ * Everything reads `--atelier-*` variables that only the KIRION Atelier theme
+ * defines, so with any other theme active the module changes nothing.
  *
  * The KIRION Atelier integration loads it on every page. For a manual install
  * use `frontend: extra_module_url` (whole UI) or a dashboard resource.
  */
 (() => {
-  const VERSION = "0.3.4";
+  const VERSION = "0.3.6";
   if (window.KirionAtelierGlass) return;
 
   const GLASS = `
@@ -19,7 +19,14 @@
 
   // tag -> CSS adopted into that element's shadow root.
   const PATCHES = {
-    "ha-card": `:host { ${GLASS} }`,
+    // The edge is a layer above the card's content (inset shadows on the card
+    // itself are painted below it, so artwork or dials would hide them).
+    "ha-card": `
+      :host { ${GLASS} }
+      :host::after {
+        content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+        border-radius: inherit; box-shadow: var(--atelier-edge, none);
+      }`,
     "hui-root": `.header { ${GLASS} }`,
     "ha-dialog": `
       .mdc-dialog__surface {
@@ -58,21 +65,29 @@
     }
   }
 
+  // The element's class, taken from an instance: a registry polyfill installed
+  // by another add-on may hide elements defined before it from get() and
+  // whenDefined(). Polls until the tag is upgraded (or gives up after a minute).
+  async function classOf(tag) {
+    for (let i = 0; i < 120; i++) {
+      const ctor = document.createElement(tag).constructor;
+      if (ctor !== HTMLElement && ctor !== HTMLUnknownElement) return ctor;
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+    return null;
+  }
+
   async function patch(tag, css) {
     const sheet = sheetFor(tag, css);
-    await customElements.whenDefined(tag);
-    // Take the class from an instance: a registry polyfill installed by another
-    // add-on may not return elements defined before it.
-    const proto = document.createElement(tag).constructor.prototype;
-    if (!Object.prototype.hasOwnProperty.call(proto, "__atelierGlass")) {
-      const connected = proto.connectedCallback;
-      proto.connectedCallback = function () {
-        connected?.call(this);
-        adopt(this, sheet);
-      };
-      proto.__atelierGlass = true;
+    const ctor = await classOf(tag);
+    if (!ctor) return;
+    // Lit adopts `elementStyles` whenever it creates a shadow root, so every
+    // instance made from now on gets the sheet. (Patching connectedCallback
+    // would not work: browsers read lifecycle callbacks once, at define().)
+    if (Array.isArray(ctor.elementStyles) && !ctor.elementStyles.includes(sheet)) {
+      ctor.elementStyles.push(sheet);
     }
-    // Elements rendered before this module loaded.
+    // Instances that already have a shadow root.
     for (const el of deep(document)) if (el.localName === tag) adopt(el, sheet);
   }
 
