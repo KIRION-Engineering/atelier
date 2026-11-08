@@ -1,4 +1,4 @@
-/*! KIRION Atelier Glass v0.3.3
+/*! KIRION Atelier Glass v0.3.4
  *
  * Home Assistant themes can only set CSS variables, and the frontend has no
  * variable for backdrop-filter. This module adds one: every patched element
@@ -9,7 +9,7 @@
  * use `frontend: extra_module_url` (whole UI) or a dashboard resource.
  */
 (() => {
-  const VERSION = "0.3.3";
+  const VERSION = "0.3.4";
   if (window.KirionAtelierGlass) return;
 
   const GLASS = `

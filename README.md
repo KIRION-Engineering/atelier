@@ -56,7 +56,7 @@ Konfiguracja YAML wszystkich kart: [docs/cards.md](docs/cards.md).
 ## Rozwój
 
 ```bash
-npm run build   # palette.py → demo/themes.generated.js (jeden wpis na preset)
+npm run build   # palette.py → demo/themes.generated.js; ikonaatelier.svg → zestaw ikon kirion
 npm run demo    # http://localhost:8787/demo/ — podgląd kart bez Home Assistanta
 npm test        # testy integracji w prawdziwym Home Assistancie
 ```
@@ -67,6 +67,7 @@ npm test        # testy integracji w prawdziwym Home Assistancie
 | `…/palette.py` | jedyne źródło kolorów: paleta → motyw (OKLCH, presety, harmonie) |
 | `…/websocket.py` | API Atelier Panel: `kirion_atelier/get`, `/preview`, `/save` |
 | `…/frontend/` | moduły Glass, Cards i Atelier Panel |
+| `ikonaatelier.svg` | ikona Atelier Panel w pasku bocznym (`kirion:atelier`); po zmianie uruchom `npm run build` |
 | `demo/` | strona podglądu z atrapą Home Assistanta |
 | `tests/` | testy pytest |
 

@@ -5,7 +5,9 @@ DOMAIN = "kirion_atelier"
 # Static files are served under a versioned path, so every release gets fresh
 # URLs and no browser or CDN cache can hold on to an old build.
 URL_BASE = "/kirion_atelier"
-MODULES = ("kirion-atelier-glass.js", "kirion-atelier-cards.js")
+# Icons first: the sidebar asks for kirion:atelier as soon as it renders.
+MODULES = ("kirion-atelier-icons.js", "kirion-atelier-glass.js", "kirion-atelier-cards.js")
+PANEL_ICON = "kirion:atelier"
 PANEL_MODULE = "kirion-atelier-panel.js"
 PANEL_URL = "kirion-atelier"
 PANEL_ELEMENT = "kirion-atelier-panel"

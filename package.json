@@ -1,10 +1,10 @@
 {
   "name": "kirion-atelier",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "python3 tools/build_demo.py",
+    "build": "python3 tools/build_demo.py && python3 tools/build_icons.py",
     "demo": "python3 -m http.server 8787",
     "test": "python -m pytest tests -q"
   }

@@ -1,8 +1,8 @@
-/*! KIRION Atelier Cards v0.3.3
+/*! KIRION Atelier Cards v0.3.4
  * Minimal glass cards for Home Assistant: hero, tile, room, chips.
  * Styled through KIRION Atelier theme tokens; fall back to stock HA variables.
  */
-const VERSION = "0.3.3";
+const VERSION = "0.3.4";
 
 /* ---------------------------------------------------------------- i18n -- */
 
