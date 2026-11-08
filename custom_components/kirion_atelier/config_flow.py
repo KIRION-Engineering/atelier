@@ -19,7 +19,7 @@ from homeassistant.helpers.selector import (
     SelectSelectorMode,
 )
 
-from .const import CONF_DEFAULT_THEME, DOMAIN, NO_THEME, THEMES
+from .const import CONF_DEFAULT_THEME, DOMAIN, NO_THEME, USE_THEME
 
 
 def _schema(default: str) -> vol.Schema:
@@ -27,7 +27,7 @@ def _schema(default: str) -> vol.Schema:
         {
             vol.Required(CONF_DEFAULT_THEME, default=default): SelectSelector(
                 SelectSelectorConfig(
-                    options=[*THEMES, NO_THEME],
+                    options=[USE_THEME, NO_THEME],
                     translation_key=CONF_DEFAULT_THEME,
                     mode=SelectSelectorMode.LIST,
                 )
@@ -37,9 +37,9 @@ def _schema(default: str) -> vol.Schema:
 
 
 class KirionAtelierConfigFlow(ConfigFlow, domain=DOMAIN):
-    """Single-step install: pick the default theme, or keep the current one."""
+    """Single-step install; colours are set later in the Atelier panel."""
 
-    VERSION = 1
+    VERSION = 2
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -50,7 +50,7 @@ class KirionAtelierConfigFlow(ConfigFlow, domain=DOMAIN):
             return self.async_create_entry(
                 title="KIRION Atelier", data={}, options=user_input
             )
-        return self.async_show_form(step_id="user", data_schema=_schema("ice"))
+        return self.async_show_form(step_id="user", data_schema=_schema(USE_THEME))
 
     @staticmethod
     @callback
@@ -59,7 +59,7 @@ class KirionAtelierConfigFlow(ConfigFlow, domain=DOMAIN):
 
 
 class KirionAtelierOptionsFlow(OptionsFlow):
-    """Change the default theme after install."""
+    """Toggle the default theme after install."""
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None

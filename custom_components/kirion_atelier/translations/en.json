@@ -3,8 +3,10 @@
     "step": {
       "user": {
         "title": "KIRION Atelier",
-        "description": "Installs the KIRION Atelier themes, the glass effect and the Atelier cards. You can change the default theme later in the integration options.",
-        "data": { "default_theme": "Default theme" },
+        "description": "Installs KIRION Atelier: the theme, the glass effect, the cards and the Atelier panel in the sidebar, where you set the colours for the whole home.",
+        "data": {
+          "default_theme": "Default theme"
+        },
         "data_description": {
           "default_theme": "Used on every device where nobody picked a theme in their profile. Each user can still choose their own."
         }
@@ -19,7 +21,9 @@
     "step": {
       "init": {
         "title": "KIRION Atelier",
-        "data": { "default_theme": "Default theme" },
+        "data": {
+          "default_theme": "Default theme"
+        },
         "data_description": {
           "default_theme": "Used on every device where nobody picked a theme in their profile."
         }
@@ -29,10 +33,7 @@
   "selector": {
     "default_theme": {
       "options": {
-        "ice": "KIRION Atelier — Ice",
-        "sage": "KIRION Atelier — Sage",
-        "amber": "KIRION Atelier — Amber",
-        "mono": "KIRION Atelier — Mono",
+        "atelier": "Use KIRION Atelier",
         "none": "Don't change the default theme"
       }
     }

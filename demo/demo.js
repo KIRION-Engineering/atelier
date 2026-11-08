@@ -217,7 +217,7 @@ push();
 
 const params = new URLSearchParams(location.search);
 const ui = {
-  variant: params.get("variant") ?? "KIRION Atelier",
+  variant: params.get("variant") ?? Object.keys(THEMES)[0],
   mode: params.get("mode") ?? (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark"),
   wall: params.get("wall") ?? "gradient",
 };
@@ -247,7 +247,7 @@ function segment(id, key, options) {
   render();
 }
 
-segment("variant", "variant", Object.keys(THEMES).map((n) => [n, n.replace("KIRION Atelier", "").trim() || "Ice"]));
+segment("variant", "variant", Object.keys(THEMES).map((n) => [n, n]));
 segment("mode", "mode", [["dark", "Ciemny"], ["light", "Jasny"]]);
 segment("wall", "wall", [["gradient", "Gradient"], ["photo", "Tapeta"]]);
 applyTheme();

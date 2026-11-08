@@ -1,8 +1,8 @@
-/*! KIRION Atelier Cards v0.2.0
+/*! KIRION Atelier Cards v0.3.0
  * Minimal glass cards for Home Assistant: hero, tile, room, chips.
  * Styled through KIRION Atelier theme tokens; fall back to stock HA variables.
  */
-const VERSION = "0.2.0";
+const VERSION = "0.3.0";
 
 /* ---------------------------------------------------------------- i18n -- */
 
@@ -740,7 +740,7 @@ class AtelierChipsCard extends AtelierCard {
       flex: none; display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 14px 0 10px;
       border-radius: 999px; font-size: 13px; font-weight: 500; color: var(--primary-text-color);
       background: var(--ha-card-background, var(--card-background-color));
-      border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color));
+      box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.45);
       backdrop-filter: var(--atelier-backdrop, none); -webkit-backdrop-filter: var(--atelier-backdrop, none);
       --mdc-icon-size: 18px;
     }

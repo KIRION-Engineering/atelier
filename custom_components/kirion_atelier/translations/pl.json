@@ -3,8 +3,10 @@
     "step": {
       "user": {
         "title": "KIRION Atelier",
-        "description": "Instaluje motywy KIRION Atelier, efekt szkła i karty Atelier. Domyślny motyw możesz później zmienić w opcjach integracji.",
-        "data": { "default_theme": "Motyw domyślny" },
+        "description": "Instaluje KIRION Atelier: motyw, efekt szkła, karty i panel Atelier w pasku bocznym, w którym ustawiasz kolorystykę całego domu.",
+        "data": {
+          "default_theme": "Motyw domyślny"
+        },
         "data_description": {
           "default_theme": "Używany na każdym urządzeniu, na którym nikt nie wybrał motywu w profilu. Każdy użytkownik nadal może wybrać własny."
         }
@@ -19,7 +21,9 @@
     "step": {
       "init": {
         "title": "KIRION Atelier",
-        "data": { "default_theme": "Motyw domyślny" },
+        "data": {
+          "default_theme": "Motyw domyślny"
+        },
         "data_description": {
           "default_theme": "Używany na każdym urządzeniu, na którym nikt nie wybrał motywu w profilu."
         }
@@ -29,10 +33,7 @@
   "selector": {
     "default_theme": {
       "options": {
-        "ice": "KIRION Atelier — Ice",
-        "sage": "KIRION Atelier — Sage",
-        "amber": "KIRION Atelier — Amber",
-        "mono": "KIRION Atelier — Mono",
+        "atelier": "Używaj KIRION Atelier",
         "none": "Nie zmieniaj motywu domyślnego"
       }
     }
