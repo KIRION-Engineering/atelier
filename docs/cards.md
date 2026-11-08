@@ -56,7 +56,7 @@ chips:
 Akcje: `toggle`, `more-info`, `navigate`, `url`, `perform-action`, `none` (+ `confirmation`). Teksty interfejsu po polsku lub angielsku, wg języka użytkownika HA.
 
 ## Title
-Tytuł i podtytuł bez tła, ramki ani krawędzi szkła, wzorowany na Mushroom Title Card. Obie linie przyjmują szablony Home Assistanta, a `{{ user }}` to imię oglądającego.
+Tytuł i podtytuł bez tła, ramki ani krawędzi szkła, wzorowany na Mushroom Title Card i z tymi samymi odstępami. Obie linie przyjmują szablony Home Assistanta, a `{{ user }}` to imię oglądającego. Pusta karta działa jak odstęp 40 px.
 ```yaml
 type: custom:kirion-atelier-title-card
 title: "Dzień dobry, {{ user }}"
@@ -66,4 +66,4 @@ title_tap_action:             # opcjonalnie, też subtitle_tap_action
   action: navigate
   navigation_path: /panel-olek/0
 ```
-Rozmiar tekstu zmienisz przez `card_mod` albo zmienne `--title-font-size` i `--subtitle-font-size`.
+Rozmiar tekstu zmienisz przez `card_mod` albo zmienne `--title-font-size`, `--subtitle-font-size` i `--title-padding`.

@@ -1,4 +1,4 @@
-/*! KIRION Atelier Panel v0.5.0
+/*! KIRION Atelier Panel v0.5.2
  * Atelier Panel: the sidebar panel where admins set the colours of the whole home: accent from a
  * colour wheel or presets, background harmony, glass strength. Colours are
  * derived server-side (kirion_atelier/preview) so the preview is exactly what
@@ -684,8 +684,18 @@ class AtelierPanel extends HTMLElement {
   }
 }
 
-try {
-  if (!customElements.get("kirion-atelier-panel")) customElements.define("kirion-atelier-panel", AtelierPanel);
-} catch (err) {
-  // already defined by another copy of this module
+// Register through the current registry until it knows the panel: Home
+// Assistant's scoped-registry polyfill does not see elements defined before it.
+{
+  const ensure = () => {
+    try {
+      if (customElements.get("kirion-atelier-panel") !== AtelierPanel) {
+        customElements.define("kirion-atelier-panel", AtelierPanel);
+      }
+    } catch (err) {
+      // Defined by another copy of this module.
+    }
+  };
+  ensure();
+  for (const ms of [250, 1000, 3000, 10000, 30000]) setTimeout(ensure, ms);
 }

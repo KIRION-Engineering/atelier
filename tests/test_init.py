@@ -11,7 +11,7 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 from custom_components.kirion_atelier.const import DOMAIN, PANEL_URL, THEME_FILE
 from custom_components.kirion_atelier.palette import PRESETS, THEME_NAME, accent_tones
 
-BASE = "/kirion_atelier/0.5.0"
+BASE = "/kirion_atelier/0.5.2"
 MODULE_URLS = {f"{BASE}/kirion-atelier-icons.js", f"{BASE}/kirion-atelier-glass.js", f"{BASE}/kirion-atelier-cards.js"}
 
 

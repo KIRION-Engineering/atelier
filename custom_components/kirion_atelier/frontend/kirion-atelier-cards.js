@@ -1,8 +1,8 @@
-/*! KIRION Atelier Cards v0.5.0
+/*! KIRION Atelier Cards v0.5.2
  * Minimal glass cards for Home Assistant: hero, tile, room, chips.
  * Styled through KIRION Atelier theme tokens; fall back to stock HA variables.
  */
-const VERSION = "0.5.0";
+const VERSION = "0.5.2";
 
 /* ---------------------------------------------------------------- i18n -- */
 
@@ -941,8 +941,9 @@ class AtelierChipsCard extends AtelierCard {
 /* --------------------------------------------------------------- title -- */
 
 // Title and subtitle in the Atelier type scale, with no card behind them.
-// Modelled on Mushroom's title card: both lines accept Home Assistant
-// templates (rendered live by the server, `user` is the viewer's name).
+// Modelled on Mushroom's title card: same spacing, both lines accept Home
+// Assistant templates (rendered live, `user` is the viewer's name), and an
+// empty card works as a 40 px spacer.
 const isTemplate = (text) => typeof text === "string" && /\{\{|\{%/.test(text);
 
 class AtelierTitleCard extends AtelierCard {
@@ -950,7 +951,7 @@ class AtelierTitleCard extends AtelierCard {
     ha-card {
       background: none; border: none; box-shadow: none; overflow: visible;
       backdrop-filter: none; -webkit-backdrop-filter: none;
-      padding: 8px 4px 4px; text-align: var(--title-align, start);
+      padding: var(--title-padding, 24px 12px 16px); text-align: var(--title-align, start);
     }
     ha-card::after { display: none; }
     h1 {
@@ -974,7 +975,6 @@ class AtelierTitleCard extends AtelierCard {
   }
 
   normalize(c) {
-    if (!c.title && !c.subtitle) throw new Error("title or subtitle is required");
     return { alignment: "start", ...c };
   }
 
@@ -1177,14 +1177,23 @@ const EDITORS = [
   ["kirion-atelier-title-card-editor", TitleEditor],
 ];
 
-for (const [tag, cls] of [...CARDS, ...EDITORS]) {
-  // A second copy of this module (e.g. right after an update) must not throw.
-  try {
-    if (!customElements.get(tag)) customElements.define(tag, cls);
-  } catch (err) {
-    // already defined
-  }
+// Home Assistant installs a scoped-registry polyfill over customElements.
+// Elements defined before it are invisible to its get(), so HA's card loader
+// reports "Custom element doesn't exist". Register again through whatever
+// registry is current until it knows us; HA rebuilds the card once it does.
+function register(tag, cls) {
+  const ensure = () => {
+    try {
+      if (customElements.get(tag) !== cls) customElements.define(tag, cls);
+    } catch (err) {
+      // Defined by another copy of this module, e.g. right after an update.
+    }
+  };
+  ensure();
+  for (const ms of [250, 1000, 3000, 10000, 30000]) setTimeout(ensure, ms);
 }
+
+for (const [tag, cls] of [...CARDS, ...EDITORS]) register(tag, cls);
 
 window.customCards = window.customCards || [];
 for (const [type, , name, description] of CARDS) {
