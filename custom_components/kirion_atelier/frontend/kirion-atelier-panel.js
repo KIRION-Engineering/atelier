@@ -1,4 +1,4 @@
-/*! KIRION Atelier Panel v0.3.0
+/*! KIRION Atelier Panel v0.3.1
  * Sidebar panel where admins set the colours of the whole home: accent from a
  * colour wheel or presets, background harmony, glass strength. Colours are
  * derived server-side (kirion_atelier/preview) so the preview is exactly what
@@ -430,7 +430,9 @@ class AtelierPanel extends HTMLElement {
     this._buildCards($(".cards"));
   }
 
-  _buildCards(host) {
+  // Opening the panel URL directly can load this module before the cards
+  // module, so wait for the card elements instead of skipping them.
+  async _buildCards(host) {
     const states = this._hass.states;
     const pick = (...domains) =>
       Object.keys(states).find((id) => domains.includes(id.split(".")[0]) && states[id].state !== "unavailable");
@@ -447,8 +449,13 @@ class AtelierPanel extends HTMLElement {
     ].filter(Boolean);
 
     this._cards = [];
+    const defined = (tag) =>
+      Promise.race([
+        customElements.whenDefined(tag).then(() => true),
+        new Promise((resolve) => setTimeout(() => resolve(false), 8000)),
+      ]);
     for (const [tag, config, cls] of defs) {
-      if (!customElements.get(tag)) continue;
+      if (!(await defined(tag))) continue;
       const el = document.createElement(tag);
       try {
         el.setConfig(Object.fromEntries(Object.entries(config).filter(([, v]) => v !== undefined)));
