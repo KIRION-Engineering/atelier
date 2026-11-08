@@ -71,3 +71,13 @@ def test_cards_use_native_blur_variable():
     theme = build_theme({"blur": 12})
     assert theme["dark"]["ha-card-backdrop-filter"] == "blur(12px) saturate(170%)"
     assert build_theme({"blur": 0})["light"]["ha-card-backdrop-filter"] == "none"
+
+
+def test_state_colours_share_the_theme_lightness():
+    theme = build_theme({"accent": "#5CC9C2"})
+    for mode, (lo, hi) in {"dark": (0.7, 0.86), "light": (0.5, 0.66)}.items():
+        v = theme[mode]
+        assert v["state-active-color"] == v["atelier-accent"]
+        for key in ("state-climate-heat-color", "state-climate-cool-color", "success-color", "warning-color", "error-color"):
+            assert lo < hex_to_oklch(v[key])[0] < hi, (mode, key)
+        assert v["atelier-icon-glow"].endswith("%")

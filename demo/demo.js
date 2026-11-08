@@ -33,9 +33,13 @@ class FakeIcon extends HTMLElement {
   set icon(v) { this._icon = v; this._draw(); }
   get icon() { return this._icon ?? this.getAttribute("icon"); }
   resolve() { return this.icon; }
-  _draw() {
-    const d = mdiPath(this.resolve() ?? "") ?? mdi.mdiCircleSmall;
-    this.shadowRoot.innerHTML = `<style>:host{display:inline-flex;width:var(--mdc-icon-size,24px);height:var(--mdc-icon-size,24px)}svg{width:100%;height:100%;fill:currentColor}</style><svg viewBox="0 0 24 24"><path d="${d}"/></svg>`;
+  async _draw() {
+    const name = this.resolve() ?? "";
+    // kirion:* comes from the integration's icon set, like in Home Assistant.
+    const custom = name.startsWith("kirion:") ? await window.customIcons?.kirion?.getIcon(name.slice(7)) : null;
+    const d = custom?.path ?? mdiPath(name) ?? mdi.mdiCircleSmall;
+    const box = custom?.viewBox ?? "0 0 24 24";
+    this.shadowRoot.innerHTML = `<style>:host{display:inline-flex;width:var(--mdc-icon-size,24px);height:var(--mdc-icon-size,24px)}svg{width:100%;height:100%;fill:currentColor}</style><svg viewBox="${box}"><path d="${d}"/></svg>`;
   }
 }
 class FakeStateIcon extends FakeIcon {
@@ -70,6 +74,7 @@ customElements.define("ha-card", class extends HTMLElement {
   connectedCallback() {}
 });
 
+await import("../custom_components/kirion_atelier/frontend/kirion-atelier-icons.js");
 await import("../custom_components/kirion_atelier/frontend/kirion-atelier-glass.js");
 await import("../custom_components/kirion_atelier/frontend/kirion-atelier-cards.js");
 
@@ -152,13 +157,13 @@ const LAYOUT = [
       "binary_sensor.alarm",
       "sensor.moc",
       "lock.drzwi",
-      { icon: "mdi:cog-outline", tap_action: { action: "navigate", navigation_path: "#config" } },
+      { icon: "kirion:gear", tap_action: { action: "navigate", navigation_path: "#config" } },
     ] },
     { type: "kirion-atelier-hero-card", weather: "weather.dom", entities: ["sensor.salon_temperatura", "media_player.sonos"] },
   ] },
   { sections: [
     { title: "Salon", cards: [
-      { type: "kirion-atelier-room-card", name: "Salon", icon: "mdi:sofa-outline",
+      { type: "kirion-atelier-room-card", name: "Salon", icon: "kirion:couch",
         temperature: "sensor.salon_temperatura", humidity: "sensor.salon_wilgotnosc",
         entities: ["light.salon", "light.kuchnia", "cover.rolety_salon", "media_player.sonos"] },
       { type: "kirion-atelier-tile-card", entity: "light.salon" },
@@ -167,13 +172,13 @@ const LAYOUT = [
       { type: "kirion-atelier-tile-card", entity: "media_player.sonos" },
     ] },
     { title: "Sypialnia", cards: [
-      { type: "kirion-atelier-room-card", name: "Sypialnia", icon: "mdi:bed-outline",
+      { type: "kirion-atelier-room-card", name: "Sypialnia", icon: "kirion:bed",
         temperature: "sensor.sypialnia_temperatura", humidity: "sensor.sypialnia_wilgotnosc",
         entities: ["light.sypialnia", "light.biurko", "fan.oczyszczacz", "climate.sypialnia"] },
       { type: "kirion-atelier-tile-card", entity: "light.sypialnia" },
       { type: "kirion-atelier-tile-card", entity: "fan.oczyszczacz" },
       { type: "kirion-atelier-tile-card", entity: "climate.sypialnia" },
-      { type: "kirion-atelier-tile-card", entity: "switch.ekspres", icon: "mdi:coffee-maker-outline" },
+      { type: "kirion-atelier-tile-card", entity: "switch.ekspres", icon: "kirion:coffee" },
     ] },
   ] },
 ];

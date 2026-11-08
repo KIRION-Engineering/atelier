@@ -151,6 +151,56 @@ def _glow_hues(accent: str, harmony: str) -> tuple[float, float, float, float]:
 # ---------------------------------------------------------------------- theme
 
 
+def _semantic(mode: str) -> dict[str, str]:
+    """State colours at the theme's lightness, so icons read as one family."""
+    L, C = (0.78, 0.13) if mode == "dark" else (0.58, 0.15)
+    hues = {"warm": 62, "heat": 40, "cool": 240, "dry": 95, "fan": 195, "green": 152, "red": 25, "yellow": 85}
+    return {name: oklch_to_hex(L, C, hue) for name, hue in hues.items()}
+
+
+def _state_colors(accent: str, icon: str, mode: str) -> dict[str, str]:
+    c = _semantic(mode)
+    colors = {
+        "state-active-color": accent,
+        "state-inactive-color": icon,
+        "state-light-active-color": c["warm"],
+        "state-climate-heat-color": c["heat"],
+        "state-climate-cool-color": c["cool"],
+        "state-climate-heat_cool-color": accent,
+        "state-climate-auto-color": accent,
+        "state-climate-dry-color": c["dry"],
+        "state-climate-fan_only-color": c["fan"],
+        "state-water_heater-active-color": c["heat"],
+        "state-fan-active-color": accent,
+        "state-cover-active-color": accent,
+        "state-media_player-active-color": accent,
+        "state-binary_sensor-active-color": accent,
+        "state-person-home-color": accent,
+        "state-device_tracker-home-color": accent,
+        "state-lock-locked-color": c["green"],
+        "state-lock-unlocked-color": c["red"],
+        "state-lock-open-color": c["red"],
+        "state-lock-jammed-color": c["red"],
+        "state-lock-locking-color": c["yellow"],
+        "state-lock-unlocking-color": c["yellow"],
+        "state-alarm_control_panel-disarmed-color": c["green"],
+        "state-alarm_control_panel-arming-color": c["yellow"],
+        "state-alarm_control_panel-pending-color": c["yellow"],
+        "state-alarm_control_panel-triggered-color": c["red"],
+        "state-sensor-battery-high-color": c["green"],
+        "state-sensor-battery-medium-color": c["yellow"],
+        "state-sensor-battery-low-color": c["red"],
+        "state-sun-above_horizon-color": c["yellow"],
+        "success-color": c["green"],
+        "warning-color": c["yellow"],
+        "error-color": c["red"],
+        "info-color": accent,
+    }
+    for armed in ("armed_away", "armed_home", "armed_night", "armed_vacation", "armed_custom_bypass"):
+        colors[f"state-alarm_control_panel-{armed}-color"] = accent
+    return colors
+
+
 def _glows(palette: dict[str, Any], mode: str) -> list[str]:
     h1, h2, h3, chroma = _glow_hues(palette["accent"], palette["harmony"])
     strength = palette["ambient"] / 100
@@ -234,6 +284,8 @@ def _mode_vars(palette: dict[str, Any], mode: str) -> dict[str, str]:
         "switch-checked-button-color": accent,
         "switch-checked-track-color": accent,
         "lovelace-background": ", ".join(_glows(palette, mode)),
+        # Every MDI icon in HA takes its colour from these state variables.
+        **_state_colors(accent, f"rgba({ink}, {0.72 if dark else 0.62})", mode),
         # Atelier tokens — consumed by the Glass module, the cards and the panel.
         "atelier-backdrop": backdrop,
         "atelier-accent": accent,
@@ -248,6 +300,8 @@ def _mode_vars(palette: dict[str, Any], mode: str) -> dict[str, str]:
             if dark
             else "inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 14px 24px -20px rgba(255, 255, 255, 0.55)"
         ),
+        # Strength of the glow under active tile icons (Glass module).
+        "atelier-icon-glow": "55%" if dark else "45%",
         "atelier-stroke": "rgba(255, 255, 255, 0.09)" if dark else "rgba(255, 255, 255, 0.78)",
         "atelier-dialog-background": "rgba(20, 23, 30, 0.74)" if dark else "rgba(248, 249, 251, 0.78)",
         "atelier-radius": "22px",

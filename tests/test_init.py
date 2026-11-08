@@ -11,7 +11,7 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 from custom_components.kirion_atelier.const import DOMAIN, PANEL_URL, THEME_FILE
 from custom_components.kirion_atelier.palette import PRESETS, THEME_NAME, accent_tones
 
-BASE = "/kirion_atelier/0.3.6"
+BASE = "/kirion_atelier/0.4.0"
 MODULE_URLS = {f"{BASE}/kirion-atelier-icons.js", f"{BASE}/kirion-atelier-glass.js", f"{BASE}/kirion-atelier-cards.js"}
 
 
@@ -62,6 +62,10 @@ async def test_setup_serves_modules_panel_and_theme(hass, config_dir, hass_clien
         resp = await client.get(url)
         assert resp.status == 200, url
         assert "KIRION Atelier" in await resp.text()
+
+    icons = await (await client.get(f"{BASE}/kirion-atelier-icons.js")).text()
+    for name in ("atelier", "lightbulb", "thermometer", "speaker-hifi", "rows"):
+        assert f'"{name}":{{"path"' in icons, name
 
     theme_file = config_dir / "themes" / THEME_FILE
     assert THEME_NAME in theme_file.read_text(encoding="utf-8")

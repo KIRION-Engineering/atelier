@@ -6,6 +6,7 @@ Nowoczesny, minimalistyczny i szklany wygląd dla Home Assistanta. Jedna integra
 - **Atelier Panel** w pasku bocznym: kolorystyka całego domu z koła kolorów albo z presetów, harmonia tła, siła szkła i podgląd na żywo.
 - **Efekt szkła:** prawdziwe rozmycie tła pod kartami, nagłówkiem i oknami.
 - **4 karty:** Hero (powitanie, zegar, pogoda), Tile, Room i Chips. Mają edytor wizualny, teksty są po polsku lub angielsku.
+- **Ikony Atelier:** wszystkie ikony MDI w HA dostają kolory z palety motywu i delikatną poświatę w aktywnych kafelkach, a karty Atelier używają własnego zestawu cienkich ikon linii.
 
 ## Instalacja
 
@@ -49,6 +50,20 @@ Wersja 0.2 miała cztery osobne motywy (Ice, Sage, Amber, Mono). Teraz to preset
 
 Usuń integrację w **Urządzenia i usługi**. Motyw i zapisana paleta zostaną usunięte, a motyw domyślny wróci do standardowego, jeśli ustawiła go integracja. Potem usuń ją w HACS.
 
+## Ikony
+
+**Wszystkie ikony MDI** (około 7000 w każdej karcie HA) zostają, ale motyw nadaje im kolory z palety liczonej w OKLCH z koloru akcentu:
+- aktywne urządzenia mają kolor akcentu,
+- grzanie, chłodzenie, osuszanie i wentylacja mają własne, zharmonizowane odcienie,
+- zamki, alarm i baterie mają stonowaną zieleń, żółć i czerwień,
+- nieaktywne ikony są wyciszone.
+
+Moduł Glass dodaje pod ikonami aktywnych kafelków HA delikatną poświatę w ich własnym kolorze.
+
+**Zestaw `kirion:`** to 88 cienkich ikon linii plus ikona `kirion:atelier`. Karty Atelier dobierają je automatycznie według domeny, klasy urządzenia i stanu: żarówka, płomień przy grzaniu, płatek przy chłodzeniu, głośnik, listwy rolet, zamek, tarcza alarmu, poziom baterii, pogoda i inne. Własną ikonę ustawisz polem `icon:` w karcie. Zestawu `kirion:` możesz też użyć w dowolnej karcie HA, np. `icon: kirion:lamp-pendant`. Pełna lista nazw jest w [assets/icons/phosphor/](assets/icons/phosphor/).
+
+Ikony linii pochodzą z [Phosphor Icons](https://phosphoricons.com) (waga „light”), licencja MIT, © 2023 Phosphor Icons. Tekst licencji jest w [assets/icons/phosphor/LICENSE](assets/icons/phosphor/LICENSE).
+
 ## Karty
 
 Konfiguracja YAML wszystkich kart: [docs/cards.md](docs/cards.md).
@@ -56,7 +71,7 @@ Konfiguracja YAML wszystkich kart: [docs/cards.md](docs/cards.md).
 ## Rozwój
 
 ```bash
-npm run build   # palette.py → demo/themes.generated.js; ikonaatelier.svg → zestaw ikon kirion
+npm run build   # palette.py → demo/themes.generated.js; ikonaatelier.svg + assets/icons/phosphor → zestaw kirion
 npm run demo    # http://localhost:8787/demo/ — podgląd kart bez Home Assistanta
 npm test        # testy integracji w prawdziwym Home Assistancie
 ```

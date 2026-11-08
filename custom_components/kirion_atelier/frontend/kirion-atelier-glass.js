@@ -1,4 +1,4 @@
-/*! KIRION Atelier Glass v0.3.6
+/*! KIRION Atelier Glass v0.4.0
  *
  * Adds what theme variables cannot: the glass edge drawn above each card's
  * content, and backdrop blur on elements without a native blur variable.
@@ -9,7 +9,7 @@
  * use `frontend: extra_module_url` (whole UI) or a dashboard resource.
  */
 (() => {
-  const VERSION = "0.3.6";
+  const VERSION = "0.4.0";
   if (window.KirionAtelierGlass) return;
 
   const GLASS = `
@@ -26,6 +26,14 @@
       :host::after {
         content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
         border-radius: inherit; box-shadow: var(--atelier-edge, none);
+      }`,
+    // Soft glow under the icon of active tiles, in the icon's own colour.
+    "ha-tile-icon": `
+      :host(:not([data-state="off"]):not([data-state="closed"]):not([data-state="locked"])
+        :not([data-state="disarmed"]):not([data-state="idle"]):not([data-state="standby"])
+        :not([data-state="not_home"]):not([data-state="unavailable"]):not([data-state="unknown"]))
+        .container.background {
+        box-shadow: 0 4px 16px -4px color-mix(in srgb, var(--tile-icon-color) var(--atelier-icon-glow, 0%), transparent);
       }`,
     "hui-root": `.header { ${GLASS} }`,
     "ha-dialog": `

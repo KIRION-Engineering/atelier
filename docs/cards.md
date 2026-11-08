@@ -20,7 +20,7 @@ show_clock: true
 type: custom:kirion-atelier-tile-card
 entity: light.salon
 name: Salon                   # opcjonalnie
-icon: mdi:ceiling-light       # opcjonalnie
+icon: kirion:lamp-pendant      # opcjonalnie; domyślnie ikona Atelier dla stanu
 tap_action: { action: toggle }      # domyślnie toggle dla przełączalnych
 hold_action: { action: more-info }  # domyślnie more-info
 ```
@@ -30,14 +30,14 @@ hold_action: { action: more-info }  # domyślnie more-info
 ```yaml
 type: custom:kirion-atelier-room-card
 name: Salon
-icon: mdi:sofa-outline
+icon: kirion:couch
 temperature: sensor.salon_temperatura
 humidity: sensor.salon_wilgotnosc
 navigation_path: /dashboard-dom/salon
 entities:
   - light.salon
   - entity: cover.rolety_salon
-    icon: mdi:blinds
+    icon: kirion:rows
 ```
 
 ## Chips
@@ -49,7 +49,7 @@ chips:
     content: name             # state (domyślnie) | name | both
   - binary_sensor.alarm
   - sensor.moc
-  - icon: mdi:cog-outline
+  - icon: kirion:gear
     tap_action: { action: navigate, navigation_path: /config }
 ```
 

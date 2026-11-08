@@ -1,8 +1,8 @@
-/*! KIRION Atelier Cards v0.3.6
+/*! KIRION Atelier Cards v0.4.0
  * Minimal glass cards for Home Assistant: hero, tile, room, chips.
  * Styled through KIRION Atelier theme tokens; fall back to stock HA variables.
  */
-const VERSION = "0.3.6";
+const VERSION = "0.4.0";
 
 /* ---------------------------------------------------------------- i18n -- */
 
@@ -139,19 +139,111 @@ const detailOf = (hass, s) => {
   return level != null && d !== "fan" ? `${level}%` : null;
 };
 
-// Lights tint the UI with their own colour; everything else uses the theme accent.
+// Lights tint the UI with their own colour, climate with its mode colour from
+// the theme palette; everything else uses the accent.
 function applyTint(el, s) {
-  const c = s && domainOf(s.entity_id) === "light" && s.state === "on" ? s.attributes.rgb_color : null;
+  const d = s && domainOf(s.entity_id);
+  const c = d === "light" && s.state === "on" ? s.attributes.rgb_color : null;
   if (Array.isArray(c)) {
     const [r, g, b] = c;
     const lum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
     el.style.setProperty("--tint", `rgb(${r}, ${g}, ${b})`);
-    el.style.setProperty("--tint-rgb", `${r}, ${g}, ${b}`);
     el.style.setProperty("--on-tint", lum > 0.55 ? "#111318" : "#ffffff");
+  } else if (d === "climate" && isActive(s)) {
+    el.style.setProperty("--tint", `var(--state-climate-${s.state}-color, var(--accent))`);
+    el.style.removeProperty("--on-tint");
   } else {
     el.style.removeProperty("--tint");
-    el.style.removeProperty("--tint-rgb");
     el.style.removeProperty("--on-tint");
+  }
+}
+
+/* -------------------------------------------------------------- icons -- */
+
+// Atelier line icons (kirion icon set, Phosphor light) for an entity; null
+// falls back to the Home Assistant default icon.
+const BATTERY = (level) =>
+  level >= 70 ? "battery-high" : level >= 35 ? "battery-medium" : level >= 10 ? "battery-low" : "battery-empty";
+
+const WEATHER_ICONS = {
+  sunny: "sun", "clear-night": "moon", partlycloudy: "cloud-sun", cloudy: "cloud",
+  rainy: "cloud-rain", pouring: "cloud-rain", snowy: "cloud-snow", "snowy-rainy": "cloud-snow",
+  hail: "cloud-snow", lightning: "cloud-lightning", "lightning-rainy": "cloud-lightning",
+  fog: "cloud-fog", windy: "wind", "windy-variant": "wind", exceptional: "warning",
+};
+
+const SENSOR_ICONS = {
+  temperature: "thermometer", humidity: "drop", moisture: "drop", power: "lightning",
+  energy: "lightning", current: "lightning", voltage: "lightning", illuminance: "sun-dim",
+  pressure: "gauge", atmospheric_pressure: "gauge", carbon_dioxide: "wind", pm25: "wind",
+  pm10: "wind", aqi: "wind", volatile_organic_compounds: "wind", timestamp: "clock",
+  duration: "timer", signal_strength: "wifi-high", wind_speed: "wind", precipitation: "cloud-rain",
+};
+
+const BINARY_ICONS = {
+  motion: ["person-simple-walk", "person"], occupancy: ["person-simple-walk", "person"],
+  presence: ["house", "house"], door: ["door-open", "door"], garage_door: ["garage", "garage"],
+  opening: ["door-open", "door"], window: ["square-split-vertical", "square-split-vertical"],
+  smoke: ["warning", "shield-check"], gas: ["warning", "shield-check"], problem: ["warning", "shield-check"],
+  safety: ["warning", "shield-check"], moisture: ["drop", "drop-half"], lock: ["lock-open", "lock"],
+  plug: ["plugs-connected", "plug"], power: ["lightning", "power"], light: ["sun", "moon"],
+  battery: ["battery-low", "battery-high"], connectivity: ["wifi-high", "wifi-high"],
+};
+
+function atelierIcon(s) {
+  if (!s) return null;
+  const d = domainOf(s.entity_id);
+  const dc = s.attributes.device_class;
+  const on = isActive(s);
+  switch (d) {
+    case "light": return on ? "lightbulb-filament" : "lightbulb";
+    case "switch":
+    case "input_boolean":
+      if (dc === "outlet") return on ? "plugs-connected" : "plug";
+      return on ? "toggle-right" : "toggle-left";
+    case "fan": return "fan";
+    case "climate":
+      return { heat: "fire", cool: "snowflake", dry: "drop-half", fan_only: "fan", auto: "arrows-clockwise",
+        heat_cool: "arrows-clockwise", off: "thermometer-simple" }[s.state] ?? "thermometer";
+    case "water_heater": return on ? "fire" : "drop";
+    case "humidifier": return "drop";
+    case "media_player":
+      if (dc === "tv") return "television";
+      return s.state === "off" ? "speaker-simple-x" : on ? "speaker-hifi" : "speaker-high";
+    case "cover":
+      if (dc === "garage" || dc === "gate") return "garage";
+      if (dc === "door") return on ? "door-open" : "door";
+      if (dc === "window") return "square-split-vertical";
+      if (dc === "curtain") return "columns";
+      return "rows";
+    case "lock": return s.state === "locked" ? "lock" : "lock-open";
+    case "person":
+    case "device_tracker": return s.state === "home" ? "house" : "user";
+    case "alarm_control_panel":
+      if (s.state === "triggered") return "shield-warning";
+      return s.state.startsWith("armed") ? "shield-check" : "shield";
+    case "siren": return "siren";
+    case "sensor":
+      if (dc === "battery" && !isNaN(Number(s.state))) return BATTERY(Number(s.state));
+      return SENSOR_ICONS[dc] ?? null;
+    case "binary_sensor": {
+      const pair = BINARY_ICONS[dc];
+      return pair ? pair[s.state === "on" ? 0 : 1] : null;
+    }
+    case "weather": return WEATHER_ICONS[s.state] ?? "cloud";
+    case "vacuum": return "broom";
+    case "scene": return "sparkle";
+    case "script": return "play";
+    case "automation": return "robot";
+    case "button":
+    case "input_button": return "hand-tap";
+    case "camera": return "video-camera";
+    case "valve": return "drop";
+    case "sun": return s.state === "above_horizon" ? "sun" : "moon";
+    case "timer": return "timer";
+    case "calendar": return "calendar";
+    case "update": return "arrows-clockwise";
+    default: return null;
   }
 }
 
@@ -238,14 +330,20 @@ function bindPress(el, { tap, hold }) {
 
 const iconMarkup = (entity, icon) =>
   entity
-    ? `<ha-state-icon data-entity="${esc(entity)}"${icon ? ` icon="${esc(icon)}"` : ""}></ha-state-icon>`
+    ? `<ha-state-icon data-entity="${esc(entity)}"${icon ? ` icon="${esc(icon)}" data-fixed` : ""}></ha-state-icon>`
     : `<ha-icon icon="${esc(icon || "mdi:circle-small")}"></ha-icon>`;
 
 // ha-state-icon needs live objects, so wire them after every hass update.
+// Without a configured icon the Atelier line icon follows the state.
 function syncIcons(root, hass) {
   for (const el of root.querySelectorAll("ha-state-icon[data-entity]")) {
+    const s = hass.states[el.dataset.entity];
     el.hass = hass;
-    el.stateObj = hass.states[el.dataset.entity];
+    el.stateObj = s;
+    if (!("fixed" in el.dataset)) {
+      const name = atelierIcon(s);
+      el.icon = name ? `kirion:${name}` : undefined;
+    }
   }
 }
 
@@ -509,7 +607,7 @@ class AtelierTileCard extends AtelierCard {
     }
     .glow {
       position: absolute; inset: 0; pointer-events: none; opacity: 0;
-      background: radial-gradient(120% 90% at 0% 0%, rgba(var(--tint-rgb, var(--accent-rgb)), 0.2), transparent 62%);
+      background: radial-gradient(120% 90% at 0% 0%, color-mix(in srgb, var(--tint, var(--accent)) 20%, transparent), transparent 62%);
       transition: opacity 0.5s var(--ease);
     }
     .on .glow { opacity: 1; }
@@ -520,7 +618,7 @@ class AtelierTileCard extends AtelierCard {
     }
     .on .bubble {
       background: var(--tint, var(--accent)); color: var(--on-tint, var(--on-accent));
-      box-shadow: 0 10px 24px -10px rgba(var(--tint-rgb, var(--accent-rgb)), 0.75);
+      box-shadow: 0 10px 24px -10px color-mix(in srgb, var(--tint, var(--accent)) 75%, transparent);
     }
     .unavailable { opacity: 0.45; }
     .name { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; color: var(--primary-text-color); }
@@ -628,7 +726,7 @@ class AtelierRoomCard extends AtelierCard {
     }
     .btn.on {
       background: var(--tint, var(--accent)); color: var(--on-tint, var(--on-accent));
-      box-shadow: 0 8px 20px -8px rgba(var(--tint-rgb, var(--accent-rgb)), 0.7);
+      box-shadow: 0 8px 20px -8px color-mix(in srgb, var(--tint, var(--accent)) 70%, transparent);
     }
     .btn.unavailable { opacity: 0.4; }
   `;
@@ -641,14 +739,14 @@ class AtelierRoomCard extends AtelierCard {
     const ids = Object.keys(hass?.states ?? {});
     return {
       name: "Salon",
-      icon: "mdi:sofa-outline",
+      icon: "kirion:couch",
       entities: ids.filter((id) => id.startsWith("light.")).slice(0, 3),
     };
   }
 
   normalize(c) {
     return {
-      icon: "mdi:home-outline",
+      icon: "kirion:house",
       ...c,
       entities: (c.entities ?? []).map((e) => (typeof e === "string" ? { entity: e } : e)),
     };
