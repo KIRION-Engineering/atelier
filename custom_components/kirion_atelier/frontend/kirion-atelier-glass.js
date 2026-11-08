@@ -1,4 +1,4 @@
-/*! KIRION Atelier Glass v0.4.0
+/*! KIRION Atelier Glass v0.4.3
  *
  * Adds what theme variables cannot: the glass edge drawn above each card's
  * content, and backdrop blur on elements without a native blur variable.
@@ -9,7 +9,7 @@
  * use `frontend: extra_module_url` (whole UI) or a dashboard resource.
  */
 (() => {
-  const VERSION = "0.4.0";
+  const VERSION = "0.4.3";
   if (window.KirionAtelierGlass) return;
 
   const GLASS = `
@@ -34,6 +34,53 @@
         :not([data-state="not_home"]):not([data-state="unavailable"]):not([data-state="unknown"]))
         .container.background {
         box-shadow: 0 4px 16px -4px color-mix(in srgb, var(--tile-icon-color) var(--atelier-icon-glow, 0%), transparent);
+      }`,
+    // Media card as plain glass: no solid colour block, placeholder art or
+    // grayscale; artwork fades into the glass from the right. The card sets
+    // colours inline, hence !important.
+    "hui-media-control-card": `
+      .color-block, .no-img {
+        background-color: transparent !important; background-image: none !important;
+      }
+      .color-gradient { background-image: none !important; }
+      .off.background { filter: none; }
+      .image {
+        -webkit-mask-image: linear-gradient(to right, transparent, #000 60%);
+        mask-image: linear-gradient(to right, transparent, #000 60%);
+        opacity: 0.9;
+      }
+      .player { color: var(--primary-text-color) !important; }
+      .player .icon { color: var(--state-icon-color); }
+      .controls { color: var(--primary-text-color); }
+      ha-slider {
+        --ha-slider-track-color: var(--atelier-fill-strong, #c8c8c880);
+        --ha-slider-indicator-color: var(--atelier-accent, var(--primary-color));
+      }`,
+    // Time input as a compact glass pill without the hh/mm labels, filled
+    // background and underline.
+    "ha-base-time-input": `
+      .time-input-wrap {
+        background: var(--atelier-fill, var(--ha-color-form-background));
+        border-radius: 999px; overflow: hidden; height: 40px; align-items: center;
+        transition: box-shadow 0.2s ease;
+      }
+      .time-input-wrap:focus-within { box-shadow: 0 0 0 2px var(--atelier-accent, var(--primary-color)); }
+      ha-input {
+        height: 40px;
+        --secondary-text-color: transparent;
+        --primary-color: transparent;
+        --ha-color-border-neutral-loud: transparent;
+        --ha-color-form-background: transparent;
+        --ha-color-form-background-hover: transparent;
+      }
+      ha-input::part(wa-base) { height: 40px; background: transparent; }
+      ha-input::part(wa-input) {
+        padding-top: 0; text-align: center; font-size: 15px; font-weight: 500;
+        font-variant-numeric: tabular-nums; color: var(--primary-text-color);
+      }
+      .time-separator, ha-icon-button {
+        background: transparent; border-bottom: none; height: 40px;
+        color: var(--secondary-text-color);
       }`,
     "hui-root": `.header { ${GLASS} }`,
     "ha-dialog": `
@@ -73,22 +120,28 @@
     }
   }
 
-  // The element's class, taken from an instance: a registry polyfill installed
-  // by another add-on may hide elements defined before it from get() and
-  // whenDefined(). Polls until the tag is upgraded (or gives up after a minute).
+  // The element's Lit class (the one with `elementStyles`). Home Assistant
+  // ships a scoped-registry polyfill: get() misses elements defined before it,
+  // an instance's constructor misses elements defined after it, and for a tag
+  // that is not defined yet it hands out a placeholder class. So accept only a
+  // class that really has elementStyles, from either source. Many cards are
+  // defined lazily, when a dashboard first uses them: wake on whenDefined(),
+  // with a slow poll as the fallback.
   async function classOf(tag) {
-    for (let i = 0; i < 120; i++) {
-      const ctor = document.createElement(tag).constructor;
-      if (ctor !== HTMLElement && ctor !== HTMLUnknownElement) return ctor;
-      await new Promise((resolve) => setTimeout(resolve, 500));
+    let defined = false;
+    const whenDefined = customElements.whenDefined(tag).then(() => (defined = true));
+    for (let i = 0; ; i++) {
+      for (const ctor of [customElements.get(tag), document.createElement(tag).constructor]) {
+        if (ctor && Array.isArray(ctor.elementStyles)) return ctor;
+      }
+      const delay = new Promise((resolve) => setTimeout(resolve, Math.min(250 * 2 ** i, 30000)));
+      await (defined ? delay : Promise.race([whenDefined, delay]));
     }
-    return null;
   }
 
   async function patch(tag, css) {
     const sheet = sheetFor(tag, css);
     const ctor = await classOf(tag);
-    if (!ctor) return;
     // Lit adopts `elementStyles` whenever it creates a shadow root, so every
     // instance made from now on gets the sheet. (Patching connectedCallback
     // would not work: browsers read lifecycle callbacks once, at define().)
