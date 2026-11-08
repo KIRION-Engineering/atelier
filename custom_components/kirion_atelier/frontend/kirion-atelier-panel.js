@@ -1,4 +1,4 @@
-/*! KIRION Atelier Panel v0.3.1
+/*! KIRION Atelier Panel v0.3.2
  * Sidebar panel where admins set the colours of the whole home: accent from a
  * colour wheel or presets, background harmony, glass strength. Colours are
  * derived server-side (kirion_atelier/preview) so the preview is exactly what
@@ -430,8 +430,7 @@ class AtelierPanel extends HTMLElement {
     this._buildCards($(".cards"));
   }
 
-  // Opening the panel URL directly can load this module before the cards
-  // module, so wait for the card elements instead of skipping them.
+  // The cards module may load after this one, so wait for the card elements.
   async _buildCards(host) {
     const states = this._hass.states;
     const pick = (...domains) =>
@@ -449,13 +448,18 @@ class AtelierPanel extends HTMLElement {
     ].filter(Boolean);
 
     this._cards = [];
-    const defined = (tag) =>
-      Promise.race([
-        customElements.whenDefined(tag).then(() => true),
-        new Promise((resolve) => setTimeout(() => resolve(false), 8000)),
-      ]);
+    // Ask the element itself, not the registry: some HACS add-ons replace
+    // window.customElements with a polyfill whose get()/whenDefined() never
+    // see elements registered before it.
+    const ready = async (tag) => {
+      for (let i = 0; i < 50; i++) {
+        if (typeof document.createElement(tag).setConfig === "function") return true;
+        await new Promise((resolve) => setTimeout(resolve, 200));
+      }
+      return false;
+    };
     for (const [tag, config, cls] of defs) {
-      if (!(await defined(tag))) continue;
+      if (!(await ready(tag))) continue;
       const el = document.createElement(tag);
       try {
         el.setConfig(Object.fromEntries(Object.entries(config).filter(([, v]) => v !== undefined)));
@@ -626,4 +630,8 @@ class AtelierPanel extends HTMLElement {
   }
 }
 
-if (!customElements.get("kirion-atelier-panel")) customElements.define("kirion-atelier-panel", AtelierPanel);
+try {
+  if (!customElements.get("kirion-atelier-panel")) customElements.define("kirion-atelier-panel", AtelierPanel);
+} catch (err) {
+  // already defined by another copy of this module
+}
