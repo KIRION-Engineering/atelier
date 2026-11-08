@@ -300,6 +300,9 @@ def _mode_vars(palette: dict[str, Any], mode: str) -> dict[str, str]:
             if dark
             else "inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 14px 24px -20px rgba(255, 255, 255, 0.55)"
         ),
+        # Glass keys (alarm keypad), painted at full opacity.
+        "atelier-key-background": "rgba(255, 255, 255, 0.08)" if dark else "rgba(255, 255, 255, 0.62)",
+        "atelier-key-opacity": "1",
         # Strength of the glow under active tile icons (Glass module).
         "atelier-icon-glow": "55%" if dark else "45%",
         "atelier-stroke": "rgba(255, 255, 255, 0.09)" if dark else "rgba(255, 255, 255, 0.78)",

@@ -1,8 +1,8 @@
-/*! KIRION Atelier Cards v0.4.3
+/*! KIRION Atelier Cards v0.5.0
  * Minimal glass cards for Home Assistant: hero, tile, room, chips.
  * Styled through KIRION Atelier theme tokens; fall back to stock HA variables.
  */
-const VERSION = "0.4.3";
+const VERSION = "0.5.0";
 
 /* ---------------------------------------------------------------- i18n -- */
 
@@ -28,7 +28,10 @@ const I18N = {
       weather: "Pogoda", temperature: "Czujnik temperatury", humidity: "Czujnik wilgotności",
       navigation_path: "Ścieżka po kliknięciu nazwy", show_clock: "Pokaż zegar",
       tap_action: "Akcja kliknięcia", hold_action: "Akcja przytrzymania",
+      title: "Tytuł", subtitle: "Podtytuł", alignment: "Wyrównanie",
+      title_tap_action: "Akcja kliknięcia tytułu", subtitle_tap_action: "Akcja kliknięcia podtytułu",
     },
+    align: { start: "Do lewej", center: "Do środka", end: "Do prawej", justify: "Wyjustowane" },
   },
   en: {
     morning: "Good morning",
@@ -43,7 +46,10 @@ const I18N = {
       weather: "Weather", temperature: "Temperature sensor", humidity: "Humidity sensor",
       navigation_path: "Path when the name is tapped", show_clock: "Show clock",
       tap_action: "Tap action", hold_action: "Hold action",
+      title: "Title", subtitle: "Subtitle", alignment: "Alignment",
+      title_tap_action: "Title tap action", subtitle_tap_action: "Subtitle tap action",
     },
+    align: { start: "Start", center: "Center", end: "End", justify: "Justify" },
   },
 };
 
@@ -932,11 +938,130 @@ class AtelierChipsCard extends AtelierCard {
   }
 }
 
+/* --------------------------------------------------------------- title -- */
+
+// Title and subtitle in the Atelier type scale, with no card behind them.
+// Modelled on Mushroom's title card: both lines accept Home Assistant
+// templates (rendered live by the server, `user` is the viewer's name).
+const isTemplate = (text) => typeof text === "string" && /\{\{|\{%/.test(text);
+
+class AtelierTitleCard extends AtelierCard {
+  static styles = `
+    ha-card {
+      background: none; border: none; box-shadow: none; overflow: visible;
+      backdrop-filter: none; -webkit-backdrop-filter: none;
+      padding: 8px 4px 4px; text-align: var(--title-align, start);
+    }
+    ha-card::after { display: none; }
+    h1 {
+      margin: 0; font-size: var(--title-font-size, clamp(22px, 3vw, 28px)); font-weight: 600;
+      line-height: 1.15; letter-spacing: -0.025em; color: var(--primary-text-color);
+    }
+    h2 {
+      margin: 4px 0 0; font-size: var(--subtitle-font-size, 15px); font-weight: 400;
+      line-height: 1.4; color: var(--secondary-text-color);
+    }
+    h1:empty, h2:empty { display: none; }
+    .press { display: inline-block; border-radius: 8px; }
+  `;
+
+  static getConfigElement() {
+    return document.createElement("kirion-atelier-title-card-editor");
+  }
+
+  static getStubConfig() {
+    return { title: "Dzień dobry, {{ user }}", subtitle: "{{ states | selectattr('state', 'eq', 'on') | list | count }} urządzeń włączonych" };
+  }
+
+  normalize(c) {
+    if (!c.title && !c.subtitle) throw new Error("title or subtitle is required");
+    return { alignment: "start", ...c };
+  }
+
+  template() {
+    const c = this._config;
+    const align = { center: "center", end: "end", justify: "justify" }[c.alignment] ?? "start";
+    const line = (tag, key) => {
+      const action = c[`${key}_tap_action`];
+      const press = action && action.action !== "none" ? ` class="press" tabindex="0" role="button"` : "";
+      return `<${tag} id="${key}"${press}></${tag}>`;
+    };
+    return `<ha-card style="--title-align:${align}">${line("h1", "title")}${line("h2", "subtitle")}</ha-card>`;
+  }
+
+  bind() {
+    for (const key of ["title", "subtitle"]) {
+      const el = this.$(`#${key}.press`);
+      if (el) bindPress(el, { tap: () => runAction(this, this._hass, this._config[`${key}_tap_action`]) });
+    }
+  }
+
+  update() {
+    for (const key of ["title", "subtitle"]) {
+      const text = this._config[key] ?? "";
+      if (isTemplate(text)) this._subscribe(key, text);
+      else this.$(`#${key}`).textContent = text;
+    }
+  }
+
+  // One render_template subscription per line, re-created when the template
+  // changes and dropped when the card leaves the page.
+  _subscribe(key, template) {
+    this._subs ??= {};
+    const current = this._subs[key];
+    if (current?.template === template || !this._hass?.connection || !this.isConnected) return;
+    current?.unsub.then((off) => off?.()).catch(() => {});
+    const unsub = this._hass.connection
+      .subscribeMessage(
+        (msg) => {
+          const el = this.$(`#${key}`);
+          if (el) el.textContent = msg.result ?? "";
+        },
+        {
+          type: "render_template",
+          template,
+          strict: false,
+          report_errors: false,
+          variables: { user: this._hass.user?.name ?? "" },
+        }
+      )
+      .catch(() => null);
+    this._subs[key] = { template, unsub };
+  }
+
+  connectedCallback() {
+    if (this._built && this._hass) this.update();
+  }
+
+  disconnectedCallback() {
+    for (const { unsub } of Object.values(this._subs ?? {})) unsub.then((off) => off?.()).catch(() => {});
+    this._subs = {};
+  }
+
+  setConfig(config) {
+    this.disconnectedCallback();
+    super.setConfig(config);
+  }
+
+  getCardSize() {
+    return this._config?.subtitle ? 2 : 1;
+  }
+
+  getGridOptions() {
+    return { columns: 12, rows: "auto" };
+  }
+}
+
 /* ------------------------------------------------------------- editors -- */
 
 // Thin wrapper around HA's own <ha-form>, so editors match the native UI.
 class AtelierEditor extends HTMLElement {
   static schema = [];
+
+  // Override when the schema needs translated option labels.
+  schema() {
+    return this.constructor.schema;
+  }
 
   setConfig(config) {
     this._config = config;
@@ -960,7 +1085,7 @@ class AtelierEditor extends HTMLElement {
       this.shadowRoot.append(this._form);
     }
     this._form.hass = this._hass;
-    this._form.schema = this.constructor.schema;
+    this._form.schema = this.schema();
     this._form.data = this._config;
   }
 }
@@ -1019,6 +1144,22 @@ class HeroEditor extends AtelierEditor {
   ];
 }
 
+class TitleEditor extends AtelierEditor {
+  schema() {
+    const align = t(this._hass).align;
+    return [
+      { name: "title", selector: { template: {} } },
+      { name: "subtitle", selector: { template: {} } },
+      {
+        name: "alignment",
+        selector: { select: { mode: "dropdown", options: Object.entries(align).map(([value, label]) => ({ value, label })) } },
+      },
+      { name: "title_tap_action", selector: { ui_action: {} } },
+      { name: "subtitle_tap_action", selector: { ui_action: {} } },
+    ];
+  }
+}
+
 /* ------------------------------------------------------------ register -- */
 
 const CARDS = [
@@ -1026,12 +1167,14 @@ const CARDS = [
   ["kirion-atelier-tile-card", AtelierTileCard, "Tile", "Minimalny kafel encji z poświatą i poziomem."],
   ["kirion-atelier-room-card", AtelierRoomCard, "Room", "Pokój: klimat, licznik aktywnych i przyciski."],
   ["kirion-atelier-chips-card", AtelierChipsCard, "Chips", "Rząd szklanych pigułek ze statusami."],
+  ["kirion-atelier-title-card", AtelierTitleCard, "Title", "Tytuł i podtytuł bez tła, z szablonami."],
 ];
 
 const EDITORS = [
   ["kirion-atelier-hero-card-editor", HeroEditor],
   ["kirion-atelier-tile-card-editor", TileEditor],
   ["kirion-atelier-room-card-editor", RoomEditor],
+  ["kirion-atelier-title-card-editor", TitleEditor],
 ];
 
 for (const [tag, cls] of [...CARDS, ...EDITORS]) {

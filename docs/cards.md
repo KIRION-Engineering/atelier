@@ -1,6 +1,6 @@
 # KIRION Atelier Cards
 
-Cztery minimalistyczne karty w stylu KIRION Atelier. Działają z każdym motywem, najlepiej wyglądają z motywem KIRION Atelier i efektem szkła.
+Pięć minimalistycznych kart w stylu KIRION Atelier. Działają z każdym motywem, najlepiej wyglądają z motywem KIRION Atelier i efektem szkła.
 
 Karty instaluje integracja KIRION Atelier (patrz README). Pojawią się w selektorze kart jako „KIRION Atelier · …”.
 
@@ -54,3 +54,16 @@ chips:
 ```
 
 Akcje: `toggle`, `more-info`, `navigate`, `url`, `perform-action`, `none` (+ `confirmation`). Teksty interfejsu po polsku lub angielsku, wg języka użytkownika HA.
+
+## Title
+Tytuł i podtytuł bez tła, ramki ani krawędzi szkła, wzorowany na Mushroom Title Card. Obie linie przyjmują szablony Home Assistanta, a `{{ user }}` to imię oglądającego.
+```yaml
+type: custom:kirion-atelier-title-card
+title: "Dzień dobry, {{ user }}"
+subtitle: "{{ states.light | selectattr('state', 'eq', 'on') | list | count }} świateł włączonych"
+alignment: start              # start | center | end | justify
+title_tap_action:             # opcjonalnie, też subtitle_tap_action
+  action: navigate
+  navigation_path: /panel-olek/0
+```
+Rozmiar tekstu zmienisz przez `card_mod` albo zmienne `--title-font-size` i `--subtitle-font-size`.

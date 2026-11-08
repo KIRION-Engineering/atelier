@@ -1,4 +1,4 @@
-/*! KIRION Atelier Glass v0.4.3
+/*! KIRION Atelier Glass v0.5.0
  *
  * Adds what theme variables cannot: the glass edge drawn above each card's
  * content, and backdrop blur on elements without a native blur variable.
@@ -9,13 +9,27 @@
  * use `frontend: extra_module_url` (whole UI) or a dashboard resource.
  */
 (() => {
-  const VERSION = "0.4.3";
+  const VERSION = "0.5.0";
   if (window.KirionAtelierGlass) return;
 
   const GLASS = `
     backdrop-filter: var(--atelier-backdrop, none);
     -webkit-backdrop-filter: var(--atelier-backdrop, none);
   `;
+
+  // An ha-input without its Material chrome: no visible label, filled box or
+  // underline. The pill around it supplies background and focus ring.
+  const BARE_INPUT = (height) => `
+      --secondary-text-color: transparent;
+      --primary-color: transparent;
+      --ha-color-border-neutral-loud: transparent;
+      --ha-color-form-background: transparent;
+      --ha-color-form-background-hover: transparent;
+      height: ${height}px;`;
+  const PILL = `
+      background: var(--atelier-fill, var(--ha-color-form-background));
+      border-radius: 999px; overflow: hidden; transition: box-shadow 0.2s ease;`;
+  const RING = "box-shadow: 0 0 0 2px var(--atelier-accent, var(--primary-color));";
 
   // tag -> CSS adopted into that element's shadow root.
   const PATCHES = {
@@ -59,20 +73,9 @@
     // Time input as a compact glass pill without the hh/mm labels, filled
     // background and underline.
     "ha-base-time-input": `
-      .time-input-wrap {
-        background: var(--atelier-fill, var(--ha-color-form-background));
-        border-radius: 999px; overflow: hidden; height: 40px; align-items: center;
-        transition: box-shadow 0.2s ease;
-      }
-      .time-input-wrap:focus-within { box-shadow: 0 0 0 2px var(--atelier-accent, var(--primary-color)); }
-      ha-input {
-        height: 40px;
-        --secondary-text-color: transparent;
-        --primary-color: transparent;
-        --ha-color-border-neutral-loud: transparent;
-        --ha-color-form-background: transparent;
-        --ha-color-form-background-hover: transparent;
-      }
+      .time-input-wrap { ${PILL} height: 40px; align-items: center; }
+      .time-input-wrap:focus-within { ${RING} }
+      ha-input { ${BARE_INPUT(40)} }
       ha-input::part(wa-base) { height: 40px; background: transparent; }
       ha-input::part(wa-input) {
         padding-top: 0; text-align: center; font-size: 15px; font-weight: 500;
@@ -81,6 +84,24 @@
       .time-separator, ha-icon-button {
         background: transparent; border-bottom: none; height: 40px;
         color: var(--secondary-text-color);
+      }`,
+    // Alarm code field: the same glass pill; the keypad below explains it, and
+    // the hidden label stays available to screen readers.
+    "hui-alarm-panel-card": `
+      ha-input { ${BARE_INPUT(44)} ${PILL} }
+      ha-input:focus-within { ${RING} }
+      ha-input::part(wa-base) { height: 44px; background: transparent; }
+      ha-input::part(wa-input) {
+        padding-top: 0; text-align: center; font-size: 18px; letter-spacing: 0.3em;
+        color: var(--primary-text-color);
+      }
+      /* Keypad keys as small glass discs, like the cards. */
+      .keypad ha-control-button {
+        --control-button-background-color: var(--atelier-key-background, var(--disabled-color));
+        --control-button-background-opacity: var(--atelier-key-opacity, 0.2);
+        border-radius: 50%;
+        ${GLASS}
+        box-shadow: var(--atelier-edge, inset 0 0 0 transparent), 0 10px 22px -14px rgba(0, 0, 0, 0.55);
       }`,
     "hui-root": `.header { ${GLASS} }`,
     "ha-dialog": `

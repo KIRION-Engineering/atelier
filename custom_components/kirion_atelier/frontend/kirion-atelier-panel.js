@@ -1,4 +1,4 @@
-/*! KIRION Atelier Panel v0.4.3
+/*! KIRION Atelier Panel v0.5.0
  * Atelier Panel: the sidebar panel where admins set the colours of the whole home: accent from a
  * colour wheel or presets, background harmony, glass strength. Colours are
  * derived server-side (kirion_atelier/preview) so the preview is exactly what

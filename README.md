@@ -5,7 +5,7 @@ Nowoczesny, minimalistyczny i szklany wygląd dla Home Assistanta. Jedna integra
 - **Motyw KIRION Atelier:** tryb jasny i ciemny przełączany razem z systemem, karty bez obrysów, głębia budowana tylko cieniem.
 - **Atelier Panel** w pasku bocznym: kolorystyka całego domu z koła kolorów albo z presetów, harmonia tła, siła szkła i podgląd na żywo.
 - **Efekt szkła:** prawdziwe rozmycie tła pod kartami, nagłówkiem i oknami.
-- **4 karty:** Hero (powitanie, zegar, pogoda), Tile, Room i Chips. Mają edytor wizualny, teksty są po polsku lub angielsku.
+- **5 kart:** Hero (powitanie, zegar, pogoda), Tile, Room, Chips i Title (nagłówek bez tła, z szablonami). Mają edytor wizualny, teksty są po polsku lub angielsku.
 - **Ikony Atelier:** wszystkie ikony MDI w HA dostają kolory z palety motywu i delikatną poświatę w aktywnych kafelkach, a karty Atelier używają własnego zestawu cienkich ikon linii.
 
 ## Instalacja

@@ -152,6 +152,7 @@ function push() {
 
 const LAYOUT = [
   { cards: [
+    { type: "kirion-atelier-title-card", title: "Dom", subtitle: "Jaśminów · wszystko pod kontrolą" },
     { type: "kirion-atelier-chips-card", chips: [
       { entity: "person.olek", content: "name" },
       "binary_sensor.alarm",
