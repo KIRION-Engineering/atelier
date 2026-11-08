@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "KIRION Atelier",
-        "description": "Installs KIRION Atelier: the theme, the glass effect, the cards and the Atelier panel in the sidebar, where you set the colours for the whole home.",
+        "description": "Installs KIRION Atelier: the theme, the glass effect, the cards and the Atelier Panel in the sidebar, where you set the colours for the whole home.",
         "data": {
           "default_theme": "Default theme"
         },

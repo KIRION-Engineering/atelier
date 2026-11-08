@@ -1,4 +1,4 @@
-"""Websocket API used by the Atelier panel."""
+"""Websocket API used by the Atelier Panel."""
 
 from __future__ import annotations
 

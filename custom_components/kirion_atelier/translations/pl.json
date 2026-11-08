@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "KIRION Atelier",
-        "description": "Instaluje KIRION Atelier: motyw, efekt szkła, karty i panel Atelier w pasku bocznym, w którym ustawiasz kolorystykę całego domu.",
+        "description": "Instaluje KIRION Atelier: motyw, efekt szkła, karty i Atelier Panel w pasku bocznym, w którym ustawiasz kolorystykę całego domu.",
         "data": {
           "default_theme": "Motyw domyślny"
         },

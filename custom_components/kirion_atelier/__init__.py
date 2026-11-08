@@ -2,7 +2,7 @@
 
 One config entry installs everything:
   * serves the Glass and Cards modules and loads them on every frontend page,
-  * adds the Atelier panel, where admins set the colours for the whole home,
+  * adds the Atelier Panel, where admins set the colours for the whole home,
   * writes the generated theme into <config>/themes and reloads it,
   * optionally makes KIRION Atelier the default theme for all users.
 """
@@ -115,7 +115,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass,
         frontend_url_path=PANEL_URL,
         webcomponent_name=PANEL_ELEMENT,
-        sidebar_title="Atelier",
+        sidebar_title="Atelier Panel",
         sidebar_icon="mdi:palette-swatch-outline",
         module_url=f"{base}/{PANEL_MODULE}",
         require_admin=True,

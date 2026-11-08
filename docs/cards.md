@@ -24,7 +24,7 @@ icon: mdi:ceiling-light       # opcjonalnie
 tap_action: { action: toggle }      # domyślnie toggle dla przełączalnych
 hold_action: { action: more-info }  # domyślnie more-info
 ```
-Światła z kolorem barwią kafel swoim kolorem; jasność / pozycja rolety / głośność pokazuje cienki pasek.
+Światła z kolorem barwią kafel swoim kolorem; jasność, pozycję rolety i głośność pokazuje cienki pasek. Klimat dopisuje do stanu bieżącą temperaturę, a odtwarzacz tytuł utworu.
 
 ## Room
 ```yaml

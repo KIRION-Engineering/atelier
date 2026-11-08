@@ -37,7 +37,7 @@ def _schema(default: str) -> vol.Schema:
 
 
 class KirionAtelierConfigFlow(ConfigFlow, domain=DOMAIN):
-    """Single-step install; colours are set later in the Atelier panel."""
+    """Single-step install; colours are set later in the Atelier Panel."""
 
     VERSION = 2
 

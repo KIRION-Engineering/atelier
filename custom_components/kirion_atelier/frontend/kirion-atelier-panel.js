@@ -1,5 +1,5 @@
-/*! KIRION Atelier Panel v0.3.2
- * Sidebar panel where admins set the colours of the whole home: accent from a
+/*! KIRION Atelier Panel v0.3.3
+ * Atelier Panel: the sidebar panel where admins set the colours of the whole home: accent from a
  * colour wheel or presets, background harmony, glass strength. Colours are
  * derived server-side (kirion_atelier/preview) so the preview is exactly what
  * every device gets after saving.
@@ -7,7 +7,7 @@
 
 const I18N = {
   pl: {
-    title: "Atelier",
+    title: "Atelier Panel",
     subtitle: "Kolorystyka domu",
     accent: "Kolor akcentu",
     custom: "Własny",
@@ -33,9 +33,18 @@ const I18N = {
     light: "Jasny",
     themeMissing: "Motyw nie jest wczytany. Sprawdź Ustawienia → Naprawy.",
     wheel: "Koło kolorów: strzałki zmieniają odcień i nasycenie",
+    sample: {
+      weather: "Pogoda",
+      temperature: "Temperatura",
+      light: "Lampa w salonie",
+      climate: "Klimatyzacja",
+      media: "Głośnik w salonie",
+      mediaTitle: "Poranna playlista",
+      cover: "Rolety",
+    },
   },
   en: {
-    title: "Atelier",
+    title: "Atelier Panel",
     subtitle: "Colours of your home",
     accent: "Accent colour",
     custom: "Custom",
@@ -61,7 +70,26 @@ const I18N = {
     light: "Light",
     themeMissing: "The theme is not loaded. Check Settings → Repairs.",
     wheel: "Colour wheel: arrow keys change hue and saturation",
+    sample: {
+      weather: "Weather",
+      temperature: "Temperature",
+      light: "Living room lamp",
+      climate: "Air conditioning",
+      media: "Living room speaker",
+      mediaTitle: "Morning playlist",
+      cover: "Blinds",
+    },
   },
+};
+
+// Preview-only entities; never registered in Home Assistant.
+const SAMPLE = {
+  weather: "weather.atelier_preview",
+  temperature: "sensor.atelier_preview_temperature",
+  light: "light.atelier_preview",
+  climate: "climate.atelier_preview",
+  media: "media_player.atelier_preview",
+  cover: "cover.atelier_preview",
 };
 
 /* ------------------------------------------------------------- colour -- */
@@ -251,12 +279,15 @@ const STYLES = `
   /* Preview */
   .preview { position: sticky; top: 80px; }
   .stage {
-    border-radius: 28px; padding: 18px; overflow: hidden; position: relative; min-height: 420px;
+    /* Concentric corners: the frame's radius is the card radius plus the gap. */
+    --gap: 14px;
+    border-radius: calc(var(--ha-card-border-radius, 22px) + var(--gap)); padding: var(--gap);
+    overflow: hidden; isolation: isolate; contain: paint; position: relative;
     background: var(--lovelace-background, var(--primary-background-color));
     color: var(--primary-text-color); transition: background 0.4s var(--ease);
     box-shadow: 0 30px 60px -36px rgba(0, 0, 0, 0.6);
   }
-  .stage-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .stage-head { display: flex; align-items: center; justify-content: space-between; margin: 2px 4px var(--gap) 8px; }
   .stage-head .label { margin: 0; }
   .stage-head .seg { width: 180px; }
   .cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
@@ -267,7 +298,6 @@ const STYLES = `
   @media (max-width: 860px) {
     .layout { grid-template-columns: 1fr; padding: 16px 12px 40px; }
     .preview { position: static; order: -1; }
-    .stage { min-height: 0; }
     .toolbar .sub { display: none; }
   }
   @media (prefers-reduced-motion: reduce) {
@@ -291,7 +321,10 @@ class AtelierPanel extends HTMLElement {
     if (this._menu) {
       this._menu.hass = hass;
     }
-    for (const card of this._cards ?? []) card.hass = hass;
+    if (this._cards) {
+      const preview = this._previewHass();
+      for (const card of this._cards) card.hass = preview;
+    }
   }
 
   set narrow(narrow) {
@@ -430,22 +463,43 @@ class AtelierPanel extends HTMLElement {
     this._buildCards($(".cards"));
   }
 
+  // Sample devices for the preview, so it always shows the same climate,
+  // light and media cards whatever the home has. They exist only in the
+  // hass object handed to the preview cards.
+  _sampleStates() {
+    const t = this.t.sample;
+    const now = new Date().toISOString();
+    const s = (entity_id, state, attributes) => ({
+      entity_id, state, attributes, last_changed: now, last_updated: now, context: { id: "", parent_id: null, user_id: null },
+    });
+    const unit = this._hass.config?.unit_system?.temperature ?? "°C";
+    return Object.fromEntries(
+      [
+        s(SAMPLE.weather, "sunny", { friendly_name: t.weather, temperature: 18, temperature_unit: unit }),
+        s(SAMPLE.temperature, "21.5", { friendly_name: t.temperature, unit_of_measurement: unit, device_class: "temperature", state_class: "measurement" }),
+        s(SAMPLE.light, "on", { friendly_name: t.light, brightness: 178, rgb_color: [255, 184, 122], color_mode: "rgb", supported_color_modes: ["rgb"] }),
+        s(SAMPLE.climate, "heat", { friendly_name: t.climate, current_temperature: 21.5, temperature: 22, hvac_action: "heating", hvac_modes: ["off", "heat", "cool", "auto"] }),
+        s(SAMPLE.media, "playing", { friendly_name: t.media, media_title: t.mediaTitle, volume_level: 0.32 }),
+        s(SAMPLE.cover, "open", { friendly_name: t.cover, current_position: 60, device_class: "blind" }),
+      ].map((x) => [x.entity_id, x])
+    );
+  }
+
+  _previewHass() {
+    this._samples ??= this._sampleStates();
+    return { ...this._hass, states: { ...this._hass.states, ...this._samples } };
+  }
+
   // The cards module may load after this one, so wait for the card elements.
   async _buildCards(host) {
-    const states = this._hass.states;
-    const pick = (...domains) =>
-      Object.keys(states).find((id) => domains.includes(id.split(".")[0]) && states[id].state !== "unavailable");
-    const weather = pick("weather");
-    const light = pick("light");
-    const other = pick("switch", "fan", "cover", "climate", "media_player", "input_boolean");
-    const chips = [pick("person"), Object.keys(states).find((id) => states[id].attributes?.device_class === "temperature")]
-      .filter(Boolean);
-
     const defs = [
-      ["kirion-atelier-hero-card", { weather, entities: chips }, "wide"],
-      light && ["kirion-atelier-tile-card", { entity: light }, "tile"],
-      other && ["kirion-atelier-tile-card", { entity: other }, "tile"],
-    ].filter(Boolean);
+      ["kirion-atelier-hero-card", { weather: SAMPLE.weather, entities: [SAMPLE.temperature, SAMPLE.media] }, "wide"],
+      ["kirion-atelier-tile-card", { entity: SAMPLE.light }, "tile"],
+      ["kirion-atelier-tile-card", { entity: SAMPLE.climate }, "tile"],
+      ["kirion-atelier-tile-card", { entity: SAMPLE.media }, "tile"],
+      ["kirion-atelier-tile-card", { entity: SAMPLE.cover }, "tile"],
+    ];
+    const hass = this._previewHass();
 
     this._cards = [];
     // Ask the element itself, not the registry: some HACS add-ons replace
@@ -467,7 +521,7 @@ class AtelierPanel extends HTMLElement {
         continue;
       }
       el.classList.add(cls);
-      el.hass = this._hass;
+      el.hass = hass;
       host.append(el);
       this._cards.push(el);
     }

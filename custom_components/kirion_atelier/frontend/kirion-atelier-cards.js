@@ -1,8 +1,8 @@
-/*! KIRION Atelier Cards v0.3.2
+/*! KIRION Atelier Cards v0.3.3
  * Minimal glass cards for Home Assistant: hero, tile, room, chips.
  * Styled through KIRION Atelier theme tokens; fall back to stock HA variables.
  */
-const VERSION = "0.3.2";
+const VERSION = "0.3.3";
 
 /* ---------------------------------------------------------------- i18n -- */
 
@@ -120,6 +120,23 @@ const levelOf = (s) => {
   if (d === "media_player" && s.attributes.volume_level != null)
     return Math.round(s.attributes.volume_level * 100);
   return null;
+};
+
+// What a tile shows after the state: the reading that matters for the domain,
+// falling back to the level (brightness, position, volume) as a percentage.
+const detailOf = (hass, s) => {
+  if (!s) return null;
+  const d = domainOf(s.entity_id);
+  const temp = s.attributes.current_temperature;
+  if (d === "climate" && temp != null) {
+    const unit = hass.config?.unit_system?.temperature ?? "°C";
+    return `${Number(temp).toLocaleString(lang(hass), { maximumFractionDigits: 1 })} ${unit}`;
+  }
+  if (d === "media_player" && isActive(s) && s.attributes.media_title) {
+    return [s.attributes.media_artist, s.attributes.media_title].filter(Boolean).join(" – ");
+  }
+  const level = levelOf(s);
+  return level != null && d !== "fan" ? `${level}%` : null;
 };
 
 // Lights tint the UI with their own colour; everything else uses the theme accent.
@@ -566,9 +583,8 @@ class AtelierTileCard extends AtelierCard {
     card.classList.toggle("unavailable", !s || s.state === "unavailable");
     applyTint(card, s);
     this.$("#name").textContent = nameOf(hass, s, this._config.name);
-    this.$("#state").textContent = level != null && domainOf(s.entity_id) !== "fan"
-      ? `${stateText(hass, s)} · ${level}%`
-      : stateText(hass, s);
+    const detail = detailOf(hass, s);
+    this.$("#state").textContent = detail ? `${stateText(hass, s)} · ${detail}` : stateText(hass, s);
     this.$(".bar i").style.width = `${level ?? 0}%`;
     this.$(".tile").setAttribute("aria-label", `${this.$("#name").textContent}: ${this.$("#state").textContent}`);
   }
