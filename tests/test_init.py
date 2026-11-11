@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (c) 2026 KIRION. See NOTICE for the attribution requirements.
 """End-to-end tests of KIRION Atelier inside a real Home Assistant instance."""
 
 from homeassistant import config_entries

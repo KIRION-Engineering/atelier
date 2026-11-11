@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (c) 2026 KIRION. See NOTICE for the attribution requirements.
 """Write demo/themes.generated.js from the integration's palette code.
 
 Run from the repo root:  python3 tools/build_demo.py

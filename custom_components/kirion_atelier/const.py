@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (c) 2026 KIRION. See NOTICE for the attribution requirements.
 """Constants for KIRION Atelier."""
 
 DOMAIN = "kirion_atelier"

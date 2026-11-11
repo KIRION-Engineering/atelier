@@ -1,4 +1,6 @@
 /*! KIRION Atelier Cards v0.6.2
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ * Copyright (c) 2026 KIRION. See NOTICE for the attribution requirements.
  * Minimal glass cards for Home Assistant: hero, tile, room, chips.
  * Styled through KIRION Atelier theme tokens; fall back to stock HA variables.
  */

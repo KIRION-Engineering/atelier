@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (c) 2026 KIRION. See NOTICE for the attribution requirements.
 """Config flow for KIRION Atelier."""
 
 from __future__ import annotations

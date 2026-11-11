@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (c) 2026 KIRION. See NOTICE for the attribution requirements.
 """KIRION Atelier palette → Home Assistant theme.
 
 The single source of every colour in the theme. A palette is a handful of

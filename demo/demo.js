@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (c) 2026 KIRION. See NOTICE for the attribution requirements.
 // Preview harness: fakes just enough of Home Assistant (hass object, ha-card,
 // ha-icon, ha-state-icon) to render KIRION Atelier outside a real instance.
 import * as mdi from "https://cdn.jsdelivr.net/npm/@mdi/js@7.4.47/+esm";

@@ -1,4 +1,6 @@
 /*! KIRION Atelier Panel v0.6.2
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ * Copyright (c) 2026 KIRION. See NOTICE for the attribution requirements.
  * Atelier Panel: the sidebar panel where admins set the colours of the whole home: accent from a
  * colour wheel or presets, background harmony, glass strength. Colours are
  * derived server-side (kirion_atelier/preview) so the preview is exactly what

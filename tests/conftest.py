@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (c) 2026 KIRION. See NOTICE for the attribution requirements.
 """Shared fixtures: load custom_components/ and give each test its own config dir."""
 
 import pytest

@@ -1,0 +1,35 @@
+KIRION Atelier
+Copyright (c) 2026 KIRION <https://kirion.pl>
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License, version 3 or (at your option) any
+later version. The full text is in the file LICENSE.
+
+Additional terms under section 7 of the GNU General Public License, version 3
+-----------------------------------------------------------------------------
+
+(b) Attribution. Every copy, modified version and derivative work of this
+    software, in source or binary form, must:
+      1. keep this NOTICE file and the copyright and SPDX notices at the top of
+         every source file;
+      2. credit KIRION as the author of the original software in its
+         documentation (README, "About" or "Credits" page or equivalent), with a
+         link to https://github.com/KIRION-Engineering/atelier;
+      3. if it shows legal notices to its users, include the line
+         "Based on KIRION Atelier by KIRION".
+
+(c) Modified versions must be marked in reasonable ways as different from the
+    original, and must not be presented as KIRION Atelier or as coming from
+    KIRION.
+
+(e) Names and logos. No rights are granted in the names "KIRION" and
+    "KIRION Atelier", or in the logos and brand images (the brand/ folder,
+    ikonaatelier.svg and logo atelier.svg). All rights in them are reserved.
+    These terms do not apply to the source code, which is licensed under the
+    GNU General Public License above.
+
+Third-party components
+----------------------
+
+Phosphor Icons (MIT licence): custom_components/kirion_atelier/frontend/PHOSPHOR-LICENSE.txt
+and assets/icons/phosphor/LICENSE.

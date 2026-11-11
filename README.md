@@ -103,3 +103,14 @@ npm test        # testy integracji w prawdziwym Home Assistancie
 | `tests/` | testy pytest |
 
 Przy wydaniu podbij `version` w `manifest.json` i wersję w nagłówkach plików JS, potem utwórz release na GitHubie z tagiem `v<wersja>`. HACS pokazuje klientom wydania jako aktualizacje.
+
+## Licencja i oznaczenie autora
+
+Kod jest na licencji **GNU GPL v3 lub nowszej** (plik [LICENSE](LICENSE)). Możesz go używać i rozwijać, ale każdy, kto kopiuje go, zmienia lub buduje na nim własny projekt, musi:
+
+- zachować plik [NOTICE](NOTICE) i nagłówki z prawami autorskimi w plikach źródłowych,
+- wskazać **KIRION** jako autora oryginału w swojej dokumentacji, z linkiem do https://github.com/KIRION-Engineering/atelier,
+- oznaczyć swoje zmiany i nie przedstawiać zmienionej wersji jako KIRION Atelier,
+- udostępnić swój kod źródłowy na tej samej licencji.
+
+Nazwy „KIRION" i „KIRION Atelier" oraz logo i grafiki marki (folder `brand/`, `ikonaatelier.svg`, `logo atelier.svg`) nie są objęte licencją kodu: wszystkie prawa do nich zastrzeżone. Szczegóły w pliku [NOTICE](NOTICE).

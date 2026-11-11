@@ -1,4 +1,6 @@
 /*! KIRION Atelier Glass v0.6.2
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ * Copyright (c) 2026 KIRION. See NOTICE for the attribution requirements.
  *
  * Adds what theme variables cannot: the glass edge drawn above each card's
  * content, and backdrop blur on elements without a native blur variable.
