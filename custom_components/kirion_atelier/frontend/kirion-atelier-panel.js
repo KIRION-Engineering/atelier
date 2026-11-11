@@ -1,4 +1,4 @@
-/*! KIRION Atelier Panel v0.6.2
+/*! KIRION Atelier Panel v0.6.3
  * SPDX-License-Identifier: GPL-3.0-or-later
  * Copyright (c) 2026 KIRION. See NOTICE for the attribution requirements.
  * Atelier Panel: the sidebar panel where admins set the colours of the whole home: accent from a

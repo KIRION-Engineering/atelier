@@ -1,4 +1,4 @@
-/*! KIRION Atelier Glass v0.6.2
+/*! KIRION Atelier Glass v0.6.3
  * SPDX-License-Identifier: GPL-3.0-or-later
  * Copyright (c) 2026 KIRION. See NOTICE for the attribution requirements.
  *
@@ -11,7 +11,7 @@
  * use `frontend: extra_module_url` (whole UI) or a dashboard resource.
  */
 (() => {
-  const VERSION = "0.6.2";
+  const VERSION = "0.6.3";
   if (window.KirionAtelierGlass) return;
 
   const GLASS = `

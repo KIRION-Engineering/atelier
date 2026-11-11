@@ -1,10 +1,10 @@
-/*! KIRION Atelier Cards v0.6.2
+/*! KIRION Atelier Cards v0.6.3
  * SPDX-License-Identifier: GPL-3.0-or-later
  * Copyright (c) 2026 KIRION. See NOTICE for the attribution requirements.
  * Minimal glass cards for Home Assistant: hero, tile, room, chips.
  * Styled through KIRION Atelier theme tokens; fall back to stock HA variables.
  */
-const VERSION = "0.6.2";
+const VERSION = "0.6.3";
 
 /* ---------------------------------------------------------------- i18n -- */
 
