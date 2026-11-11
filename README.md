@@ -4,6 +4,10 @@
 
 ![KIRION Atelier dashboard, dark mode](https://raw.githubusercontent.com/KIRION-Engineering/atelier/main/assets/screenshots/dashboard-dark.jpg)
 
+<!-- ha-marketplace:exclude-start -->
+[![Open your Home Assistant instance and open this repository in HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=KIRION-Engineering&repository=atelier&category=integration)
+<!-- ha-marketplace:exclude-end -->
+
 Nowoczesny, minimalistyczny i szklany wygląd dla Home Assistanta. Jedna integracja instaluje wszystko:
 
 - **Motyw KIRION Atelier:** tryb jasny i ciemny przełączany razem z systemem, karty bez obrysów, głębia budowana tylko cieniem.
