@@ -1,4 +1,4 @@
-/*! KIRION Atelier Glass v0.6.1
+/*! KIRION Atelier Glass v0.6.2
  *
  * Adds what theme variables cannot: the glass edge drawn above each card's
  * content, and backdrop blur on elements without a native blur variable.
@@ -9,7 +9,7 @@
  * use `frontend: extra_module_url` (whole UI) or a dashboard resource.
  */
 (() => {
-  const VERSION = "0.6.1";
+  const VERSION = "0.6.2";
   if (window.KirionAtelierGlass) return;
 
   const GLASS = `
