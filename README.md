@@ -1,5 +1,9 @@
 # KIRION Atelier
 
+*English: KIRION Atelier is a Home Assistant integration (install it through HACS) that gives the whole interface a modern, minimal glass look: one theme with light and dark mode, a colour panel in the sidebar and six dashboard cards with a visual editor. No YAML, scripts or tokens needed.*
+
+![KIRION Atelier dashboard, dark mode](https://raw.githubusercontent.com/KIRION-Engineering/atelier/main/assets/screenshots/dashboard-dark.jpg)
+
 Nowoczesny, minimalistyczny i szklany wygląd dla Home Assistanta. Jedna integracja instaluje wszystko:
 
 - **Motyw KIRION Atelier:** tryb jasny i ciemny przełączany razem z systemem, karty bez obrysów, głębia budowana tylko cieniem.
@@ -7,6 +11,14 @@ Nowoczesny, minimalistyczny i szklany wygląd dla Home Assistanta. Jedna integra
 - **Efekt szkła:** prawdziwe rozmycie tła pod kartami, nagłówkiem i oknami.
 - **6 kart:** Hero (powitanie, zegar, pogoda), Tile, Room, Chips, Title (nagłówek bez tła, z szablonami) i Spacer (odstęp o wybranej wysokości). Mają edytor wizualny, teksty są po polsku lub angielsku.
 - **Ikony Atelier:** wszystkie ikony MDI w HA dostają kolory z palety motywu i delikatną poświatę w aktywnych kafelkach, a karty Atelier używają własnego zestawu cienkich ikon linii.
+
+## Zrzuty ekranu
+
+Tryb jasny i widok na telefonie (zrzuty z podglądu na przykładowych danych):
+
+![KIRION Atelier, tryb jasny](https://raw.githubusercontent.com/KIRION-Engineering/atelier/main/assets/screenshots/dashboard-light.jpg)
+
+<img src="https://raw.githubusercontent.com/KIRION-Engineering/atelier/main/assets/screenshots/phone.jpg" alt="KIRION Atelier na telefonie" width="300">
 
 ## Instalacja
 
